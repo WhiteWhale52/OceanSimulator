@@ -1,7 +1,5 @@
-
-
-
+#include "config.h"
 
 int main() {
-	return 0;
+    std::cout << "Vulkan.hpp found successfully!\n";
 }

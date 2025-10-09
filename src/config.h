@@ -1,6 +1,9 @@
 
 #pragma once
+#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
+#include "VkFFT/VkFFT.h"
+
 /*
 * Including the prebuilt header from the lunarg sdk will load
 * most functions, but not all.

@@ -1,0 +1,3 @@
+[submodule "external/VkFFT"]
+	path = external/VkFFT
+	url = https://github.com/DTolm/VkFFT
