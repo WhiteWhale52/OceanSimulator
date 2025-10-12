@@ -28,7 +28,7 @@
 
 * Created an instance of vk::DebugUtilsMessengerEXT to the engine.h file
 
-#### Personal Notes:
+### Personal Notes:
 
 1. Vulkan is designed to be as thin as possible, so no built-in bookkeeping or error-handling, that is why was use ValidationLayers to detect invalid usuage and manually check return codes or enable extensions for error reporting.
 
