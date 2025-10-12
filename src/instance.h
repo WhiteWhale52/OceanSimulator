@@ -1,0 +1,158 @@
+#pragma once
+
+#include "config.h"
+
+namespace vkInit {
+
+
+	bool supported(std::vector<const char*>& extensions, std::vector<const char*>& layers, bool debug) {
+		
+		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
+		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
+
+		if (debug) {
+			std::cout << "The device supports the following extensions: \n";
+			for (vk::ExtensionProperties supportedExtension : supportedExtensions) {
+				std::cout << "\t\"" << supportedExtension.extensionName << "\"\n";
+			}
+		}
+
+		bool found;
+		for (const char* extension : extensions) {
+			found = false;
+			for (vk::ExtensionProperties supportedExtension : supportedExtensions) {
+				if (strcmp(supportedExtension.extensionName, extension) == 0) {
+					found = true;
+					std::cout << "Extension \"" << extension << "\" is supported\n";
+				}
+			}
+			if (!found) {
+				if (debug) {
+					std::cout << "Extension \"" << extension << "\" is not supported\n";
+				}
+				return false;
+			}
+		}
+
+		if (debug) {
+			std::cout << "The device supports the following layers: \n";
+			for (vk::LayerProperties supportedLayer : supportedLayers) {
+				std::cout << "\t\"" << supportedLayer.layerName << "\"\n";
+			}
+		}
+
+		for (const char* layer : layers) {
+			found = false;
+			for (vk::LayerProperties supportedLayer : supportedLayers) {
+				if (strcmp(supportedLayer.layerName, layer) == 0) {
+					found = true;
+					std::cout << "Layer \"" << layer << "\" is supported\n";
+				}
+			}
+			if (!found) {
+				if (debug) {
+					std::cout << "Layer \"" << layer << "\" is not supported\n";
+				}
+				return false;
+			}
+		}
+
+
+		return true;
+	}
+
+	vk::Instance make_instance(bool debug, const char* applicationName) {
+		
+		if (debug) {
+			std::cout << "Making an instance... \n";
+		}
+
+		/*
+		* An instance stores all per-application state info, it is a vulkan handle
+		* (An opaque integer or pointer value used to refer to a Vulkan object)
+		* side note: in the vulkan.hpp binding it's a wrapper class around a handle
+		*
+		* from vulkan_core.h:
+		* VK_DEFINE_HANDLE(VkInstance)
+		*
+		* from vulkan_handles.hpp:
+		* class Instance {
+		* ...
+		* }
+		*/
+
+
+		uint32_t version{ 0 };
+		vkEnumerateInstanceVersion(&version);
+
+		if (debug) {
+			std::cout << "System can support Vulkan Variant: " << VK_API_VERSION_VARIANT(version)
+				<< ", Major: " << VK_API_VERSION_MAJOR(version)
+				<< ", Minor: " << VK_API_VERSION_MINOR(version)
+				<< ", Patch: " << VK_API_VERSION_PATCH(version) << "\n";
+
+		}
+
+		version &= ~(0xFFFU);
+
+		vk::ApplicationInfo appInfo = vk::ApplicationInfo(
+			applicationName,
+			version,
+			"Doing it the right way",
+			version,
+			version
+		);
+
+		uint32_t glfwExtensionCount = 0;
+		const char** glfwExtensions;
+		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+		if (debug) {
+			extensions.push_back("VK_EXT_debug_utils");
+		}
+
+
+
+		if (debug) {
+			std::cout << "extensions to be requested \n";
+			for (const char* extensionName : extensions) {
+				std::cout << "\t\"" << extensionName << "\"\n";
+			}
+		}
+
+
+		std::vector<const char*> layers;
+
+		if (debug) {
+			layers.push_back("VK_LAYER_KHRONOS_validation");
+		}
+
+		if (!supported(extensions, layers, debug)) {
+			return nullptr;
+		}
+
+
+		vk::InstanceCreateInfo createInfo = vk::InstanceCreateInfo(
+			vk::InstanceCreateFlags(),
+			&appInfo,
+			static_cast<uint32_t>(layers.size()),
+			layers.data(),
+			static_cast<uint32_t>(extensions.size()),
+			extensions.data() // enable extensions
+		);
+
+		try {
+			return vk::createInstance(createInfo);
+
+		}
+		catch(vk::SystemError err) {
+			if (debug) {
+				std::cout << "Failed to create the instance \n";
+			}
+			return nullptr;
+		}
+	}
+
+
+}

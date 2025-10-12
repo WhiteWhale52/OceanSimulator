@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;C:\VulkanSDK\1.4.321.1\Include\glslang\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /external:I "C:/VulkanSDK/1.4.321.1/Include" /external:I "C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/include"</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -68,10 +68,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;GLFW_DLL;VKFFT_BACKEND=0;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;C:\VulkanSDK\1.4.321.1\Include;C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;C:\VulkanSDK\1.4.321.1\Include\glslang\Include;C:\VulkanSDK\1.4.321.1\Include;C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;C:\VulkanSDK\1.4.321.1\Include;C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\vkFFT;C:\VulkanSDK\1.4.321.1\Include\glslang\Include;C:\VulkanSDK\1.4.321.1\Include;C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -91,7 +91,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\debug\lib\glfw3dll.lib;C:\VulkanSDK\1.4.321.1\Lib\vulkan-1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\moham\Documents\GitHub\vcpkg\installed\x64-windows\debug\lib\glfw3dll.lib;C:\VulkanSDK\1.4.321.1\Lib\vulkan-1.lib;C:\VulkanSDK\1.4.321.1\Lib\glslangd.lib;C:\VulkanSDK\1.4.321.1\Lib\SPIRVd.lib;C:\VulkanSDK\1.4.321.1\Lib\OSDependentd.lib;C:\VulkanSDK\1.4.321.1\Lib\MachineIndependentd.lib;C:\VulkanSDK\1.4.321.1\Lib\GenericCodeGend.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DataExecutionPrevention></DataExecutionPrevention>
@@ -128,6 +128,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\main.cpp" />
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.cpp" />
+    <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.h" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/glslang-main-populate"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/90484e12796cf0852c09ce91e30965e3/glslang-main-populate.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/8e0df8a80a03470fd828eae41d2324ac/glslang-main-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/026e6ed1b3e2f842a98f0ac0a0303482/glslang-main-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"glslang-main-populate"
+		],
+		"name" : "glslang-main-populate"
+	}
+}

@@ -1,0 +1,150 @@
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-MKDIR.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/tmp/glslang-main-populate-mkdirs.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-mkdir
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-DOWNLOAD.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\VkFFT
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/tmp/glslang-main-populate-gitclone.cmake
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-download
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-UPDATE.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\external\VkFFT\glslang-main
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -Dcan_fetch=YES -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/tmp/glslang-main-populate-gitupdate.cmake
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-PATCH.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-patch
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-CONFIGURE.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\out\build\x64-Debug\_deps\glslang-main-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-configure
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-BUILD.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\out\build\x64-Debug\_deps\glslang-main-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-build
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-INSTALL.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\out\build\x64-Debug\_deps\glslang-main-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-install
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\026E6ED1B3E2F842A98F0AC0A0303482\GLSLANG-MAIN-POPULATE-TEST.RULE
+setlocal
+cd C:\Users\moham\Documents\GitHub\Fluid_Simulator\out\build\x64-Debug\_deps\glslang-main-build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-test
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\8E0DF8A80A03470FD828EAE41D2324AC\GLSLANG-MAIN-POPULATE-COMPLETE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/Debug
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/Debug/glslang-main-populate-complete
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate-prefix/src/glslang-main-populate-stamp/Debug/glslang-main-populate-done
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\90484E12796CF0852C09CE91E30965E3\GLSLANG-MAIN-POPULATE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild --check-stamp-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

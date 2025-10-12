@@ -1,6 +1,6 @@
 ^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\CMAKEFILES\E06F7ABE539EBDD6E13039592CACB286\GENERATE.STAMP.RULE
 setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/FluidSimulator.sln
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/FluidSimulator.sln
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

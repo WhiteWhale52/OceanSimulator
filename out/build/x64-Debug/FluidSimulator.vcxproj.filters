@@ -4,11 +4,22 @@
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4768629A-3EDE-3930-B6F5-757DD507DDAF}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{9FC4D41F-BBEB-3620-A691-F37ADFEEC23C}</UniqueIdentifier>
     </Filter>

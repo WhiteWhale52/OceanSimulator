@@ -1,6 +1,6 @@
 ^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\CMAKELISTS.TXT
 setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug --check-stamp-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug --check-stamp-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

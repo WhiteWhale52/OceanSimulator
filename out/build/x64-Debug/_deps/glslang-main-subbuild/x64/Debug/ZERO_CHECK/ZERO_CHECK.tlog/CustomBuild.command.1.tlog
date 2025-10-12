@@ -1,0 +1,10 @@
+^C:\USERS\MOHAM\DOCUMENTS\GITHUB\FLUID_SIMULATOR\OUT\BUILD\X64-DEBUG\_DEPS\GLSLANG-MAIN-SUBBUILD\CMAKEFILES\90484E12796CF0852C09CE91E30965E3\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild -BC:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/_deps/glslang-main-subbuild/glslang-main-populate.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

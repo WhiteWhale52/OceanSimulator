@@ -1,5 +1,10 @@
 #include "config.h"
+#include "engine.h"
 
 int main() {
-    std::cout << "Vulkan.hpp found successfully!\n";
+	Engine* graphicsEngine = new Engine();
+	delete graphicsEngine;
+
+	return 0;
+
 }
