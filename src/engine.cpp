@@ -1,6 +1,6 @@
 #include "engine.h"
 #include "instance.h"
-#include <iostream>
+#include "logger.h"
 
 
 Engine::Engine() {
@@ -39,12 +39,20 @@ void Engine::make_instance() {
 	instance = vkInit::make_instance(debugMode, "Ocean Waves");
 }
 
+void Engine::make_debug_messenger() {
+	if (!debugMode) {
+		return;
+	}
+	debugMessenger = vkInit::make_debug_messenger(instance, debugMessenger);
+}
+
 Engine::~Engine() {
 	if (debugMode) {
 		std::cout << "Goodbye see you \n";
 	}
 
 	glfwTerminate();
+	vkInit::destroy_debug_messenger(instance, debugMessenger);
 
 	instance.destroy();
 }

@@ -395,6 +395,18 @@ VCPKG_VERBOSE:BOOL=OFF
 // - Metal
 VKFFT_BACKEND:STRING=0
 
+//Value Computed by CMake
+VMA_BINARY_DIR:STATIC=C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/external/VulkanMemoryAllocator
+
+//Install VulkanMemoryAllocator
+VMA_ENABLE_INSTALL:BOOL=OFF
+
+//Value Computed by CMake
+VMA_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+VMA_SOURCE_DIR:STATIC=C:/Users/moham/Documents/GitHub/Fluid_Simulator/external/VulkanMemoryAllocator
+
 //The directory containing a CMake configuration file for VULKAN.
 VULKAN_DIR:PATH=VULKAN_DIR-NOTFOUND
 
@@ -413,6 +425,9 @@ VkFFT_use_FP128_Bluestein_RaderFFT:BOOL=OFF
 
 //Build VkFFT quad double-double
 VkFFT_use_FP128_double_double:BOOL=OFF
+
+//The directory containing a CMake configuration file for VulkanMemoryAllocator.
+VulkanMemoryAllocator_DIR:PATH=VulkanMemoryAllocator_DIR-NOTFOUND
 
 //The directory containing a CMake configuration file for Vulkan.
 Vulkan_DIR:PATH=Vulkan_DIR-NOTFOUND

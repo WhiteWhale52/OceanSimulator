@@ -4,12 +4,21 @@
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\VMAUsage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\instance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.h">
+    <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

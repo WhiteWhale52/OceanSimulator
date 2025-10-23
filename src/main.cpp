@@ -1,4 +1,3 @@
-#include "config.h"
 #include "engine.h"
 
 int main() {
@@ -6,5 +5,4 @@ int main() {
 	delete graphicsEngine;
 
 	return 0;
-
 }

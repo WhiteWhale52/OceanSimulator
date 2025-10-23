@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan.hpp>
+#include "config.h"
 
 
 /*
@@ -46,7 +46,7 @@ private:
 
 	vk::Instance instance{ nullptr };
 
-	vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
+	VkDebugUtilsMessengerEXT debugMessenger{ nullptr };
 
 
 	void build_glfw_window();
