@@ -43,6 +43,8 @@ private:
 	int height{ 480 };
 	GLFWwindow* window{ nullptr };
 
+	vk::PhysicalDevice physicalDevice{nullptr};
+
 
 	vk::Instance instance{ nullptr };
 

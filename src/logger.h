@@ -54,7 +54,32 @@ namespace vkInit {
 	vk::Result destroy_debug_messenger(vk::Instance& instance,  VkDebugUtilsMessengerEXT& messenger);
 
 
-
-
-
 }
+
+class Logger {
+public:
+	static Logger* logger;
+
+	static Logger* get_logger();
+
+	void set_mode(bool mode);
+
+	bool is_enabled();
+
+	void print(std::string message);
+
+	void report_version_number(uint32_t version);
+
+	void print_extensions(const std::vector<vk::ExtensionProperties>& extensions);
+
+	void print_layers(const std::vector<vk::LayerProperties>& layers);
+
+	void logDevice(const vk::PhysicalDevice& device);
+
+	void print_list(const char** list, uint32_t const);
+
+
+private:
+
+	bool enabled;
+};

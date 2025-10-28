@@ -1,4 +1,5 @@
 #include "instance.h"
+#include "logger.h"
 
 /// <summary>
 /// Checks if the extensions and layers requested are supported
@@ -68,9 +69,10 @@ bool vkInit::supported(std::vector<const char*>& extensions, std::vector<const c
 
 vk::Instance vkInit::make_instance(bool debug, const char* applicationName) {
 
-	if (debug) {
-		std::cout << "Making an instance... \n";
-	}
+	Logger* logger = Logger::get_logger();
+
+
+	logger->print("Making an instance");
 
 	/*
 	* An instance stores all per-application state info, it is a vulkan handle
@@ -87,16 +89,9 @@ vk::Instance vkInit::make_instance(bool debug, const char* applicationName) {
 	*/
 
 
-	uint32_t version{ 0 };
-	vkEnumerateInstanceVersion(&version);
+	uint32_t version = vk::enumerateInstanceVersion();
 
-	if (debug) {
-		std::cout << "System can support Vulkan Variant: " << VK_API_VERSION_VARIANT(version)
-			<< ", Major: " << VK_API_VERSION_MAJOR(version)
-			<< ", Minor: " << VK_API_VERSION_MINOR(version)
-			<< ", Patch: " << VK_API_VERSION_PATCH(version) << "\n";
-
-	}
+	logger->report_version_number(version);
 
 	version &= ~(0xFFFU);
 
@@ -107,6 +102,7 @@ vk::Instance vkInit::make_instance(bool debug, const char* applicationName) {
 		version,
 		version
 	);
+
 
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
@@ -149,7 +145,7 @@ vk::Instance vkInit::make_instance(bool debug, const char* applicationName) {
 		static_cast<uint32_t>(layers.size()),
 		layers.data(),
 		static_cast<uint32_t>(extensions.size()),
-		extensions.data() // enable extensions
+		extensions.data() 
 	);
 
 	try {

@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "instance.h"
 #include "logger.h"
+#include "device.h"
 
 
 Engine::Engine() {
@@ -9,9 +10,10 @@ Engine::Engine() {
 		std::cout << "Making a graphics window \n" ;
 	}
 
-	build_glfw_window();
 
 	make_instance();
+
+	physicalDevice = choose_physical_device(instance);
 }
 
 void Engine::build_glfw_window() {

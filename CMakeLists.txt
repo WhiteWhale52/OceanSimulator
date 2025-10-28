@@ -49,13 +49,14 @@ file(GLOB IMGUI_SOURCES external/imgui/*.cpp)
 
 # ---- Sources ----
 add_executable(FluidSimulator
-    "src/main.cpp"
+    "src/device.h"
     "src/logger.h"
     "src/logger.cpp"
+     "src/device.cpp" 
     "src/VMAUsage.cpp"
-    "src/instance.cpp"
     "src/engine.cpp"
-    )
+    "src/instance.cpp"
+    "src/main.cpp")
 
 # ---- Link Libraries ----
 target_link_libraries(FluidSimulator PRIVATE

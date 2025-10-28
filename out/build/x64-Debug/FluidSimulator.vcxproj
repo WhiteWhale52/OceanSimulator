@@ -127,12 +127,14 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\main.cpp" />
+    <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\device.h" />
     <ClInclude Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\logger.h" />
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\logger.cpp" />
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\device.cpp" />
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\VMAUsage.cpp" />
-    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\instance.cpp" />
     <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\engine.cpp" />
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\instance.cpp" />
+    <ClCompile Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\src\main.cpp" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
