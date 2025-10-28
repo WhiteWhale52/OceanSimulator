@@ -4,6 +4,17 @@ This project implements a real-time, FFT-driven water simulation system capable 
 
 Instead of solving full 3D Navier–Stokes equations, the simulation represents the ocean surface as a heightfield derived from a wave energy spectrum in the frequency domain. The surface is updated each frame using Fast Fourier Transforms (FFTs), allowing thousands of interacting waves to evolve seamlessly and in real time.
 
+# 🎯 Goals
+<img width="1910" height="903" alt="image" src="https://github.com/user-attachments/assets/6929769a-bdcc-4147-b3c5-30c7f7a3eead" />
+
+* ### Real-time performance with physically grounded visuals
+
+* ### Scalable to large ocean scenes using tile-based rendering
+
+* ### GPU-only simulation for integration into real-time engines
+
+* ### Extensible for coupling with particles or foam generation
+
 # ⚙️ Key Features
 
 * GPU-accelerated FFTs for high-performance spectral updates
@@ -36,6 +47,8 @@ Introduced directional spreading functions, choppy wave displacement, and spectr
 ### Arc Blanc’s Refinements
 Improved energy conservation and amplitude normalization in Tessendorf’s model. This ensures waves maintain consistent visual strength at different grid resolutions, avoiding the “flat” or “overblown” look common in uncorrected implementations.
 
+---
+
 _**Together, these techniques form a modern GPU ocean simulation pipeline — stable, scalable, and visually believable.**_
 
 # 🧩 Technical Details
@@ -67,16 +80,6 @@ Horvath’s horizontal displacement technique is applied to sharpen wave crests.
 ### Rendering:
 The final heightfield is rendered using physically based shading, normal reconstruction, and seamless tiling.
 
-# 🎯 Goals
-<img width="1910" height="903" alt="image" src="https://github.com/user-attachments/assets/6929769a-bdcc-4147-b3c5-30c7f7a3eead" />
-
-### Real-time performance with physically grounded visuals
-
-### Scalable to large ocean scenes using tile-based rendering
-
-### GPU-only simulation for integration into real-time engines
-
-### Extensible for coupling with particles or foam generation
 
 # 📚 References
 
