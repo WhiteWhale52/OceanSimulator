@@ -1,48 +1,96 @@
-# Ocean Simulator
-## Overview
-This project implements a high-performance, visually convincing fluid simulation framework for games and real-time applications. It combines principles from Eulerian and kinetic solvers with GPU optimization and FFT-based ocean wave synthesis to achieve physically inspired yet efficient results.
+# 🔍 Overview
 
-## Key Features
+This project implements a real-time, FFT-driven water simulation system capable of rendering large ocean surfaces with realistic wave motion, choppiness, and wind interaction — all computed entirely on the GPU.
 
-### Stable Real-Time Fluid Dynamics
-Based on Jos Stam’s “Real-Time Fluid Dynamics for Games”, the solver provides visually stable, unconditionally stable Navier–Stokes integration suitable for smoke, water, and gas effects.
+Instead of solving full 3D Navier–Stokes equations, the simulation represents the ocean surface as a heightfield derived from a wave energy spectrum in the frequency domain. The surface is updated each frame using Fast Fourier Transforms (FFTs), allowing thousands of interacting waves to evolve seamlessly and in real time.
 
-### Ocean Surface Simulation
-Implements Jerry Tessendorf’s “Simulating Ocean Water” model using FFT-based spectral synthesis for realistic deep-water waves, reflections, refraction, and light scattering.
+# ⚙️ Key Features
 
-### GPU-Accelerated Kinetic Solver
-Utilizes concepts from “GPU Optimization for High-Quality Kinetic Fluid Simulation”, leveraging the ACM-MRT lattice Boltzmann formulation for parallel, high-quality turbulent flow simulation with complex boundary handling.
+* GPU-accelerated FFTs for high-performance spectral updates
 
-### FFT on the GPU
-Integrates efficient GPU-based FFT techniques from “The FFT on a GPU” to accelerate spectrum synthesis and filtering operations directly on the graphics hardware.
+* Heightfield-based ocean rendering with infinite tiling
 
-### Height-Field Simulation for Sand-Water Mixtures (Very Far in the Future)
-Extends “Real-Time Height-Field Simulation of Sand and Water Mixtures” to handle two-phase shallow-water and granular flow dynamics in real time, combining elastoplastic sand behavior with water flow and diffusion.
+* Directional wind-based wave generation
 
-### Optimized GPU Pipeline
-* Custom memory layout and multi-kernel strategy for maximum coalesced access.
-* Load-balanced immersed boundary implementation.
-* Multi-GPU support for large-scale simulations.
+* Choppy wave displacements for natural asymmetry
 
-## Applications
-* Real-time game engines (Unity/Unreal)
-* Interactive terrain and ocean scenes
-* GPU-based research in fluid and kinetic simulation
+* Energy-conserving amplitude correction
 
+* Stable time integration for visually smooth, large-scale motion
 
-## Acknowledgements
-This project builds on the foundational works of:
+* Implemented in C++ and compute shaders for maximum efficiency
 
-David Algis (2025) - Arc Blanc: a real time ocean simulation framework
+# 🧠 Background and Influences
 
-Haozhe Su & Xifeng Gao (2023) - Real-time Height-field Simulation of Sand and Water Mixtures
+This project draws inspiration from several key works in computer graphics fluid simulation:
 
-Jerry Tessendorf (2001–2004) – Simulating Ocean Water
+### Jerry Tessendorf — “Simulating Ocean Water”
+The foundation of this project. Tessendorf introduced FFT-based spectral synthesis for ocean surfaces, where wave amplitudes and phases are generated from statistical ocean models. This allows complex, realistic surfaces to be computed efficiently.
 
-Christopher J. Horvath - Empirical Directional Wave Spectra for Computer Graphics
+### Jos Stam — “Stable Fluids for Games”
+Stam’s method inspired the system’s stability and time integration strategies, ensuring smooth evolution without requiring tiny time steps — critical for real-time rendering.
 
-Yixin Chen et al. (2022) – GPU Optimization for High-Quality Kinetic Fluid Simulation
+### Horvath’s Improvements
+Introduced directional spreading functions, choppy wave displacement, and spectral filtering. These make waves sharper, more wind-dependent, and visually richer by redistributing energy realistically across frequencies.
 
-Kenneth Moreland & Edward Angel (2003) – The FFT on a GPU
+### Arc Blanc’s Refinements
+Improved energy conservation and amplitude normalization in Tessendorf’s model. This ensures waves maintain consistent visual strength at different grid resolutions, avoiding the “flat” or “overblown” look common in uncorrected implementations.
 
-Haozhe Su et al. (2023) – Real-Time Height-Field Simulation of Sand and Water Mixtures
+_**Together, these techniques form a modern GPU ocean simulation pipeline — stable, scalable, and visually believable.**_
+
+# 🧩 Technical Details
+
+### Language: C++
+
+### Rendering: Vulkan / GLSL
+
+### Simulation Core: GPU-accelerated FFT (based on vkFFT)
+
+### Data Representation: 2D complex frequency grids for displacement and choppiness
+
+### Performance: Real-time simulation of 256×256 wave grids at 60+ FPS on mid-range GPUs
+
+# 🌬️ How It Works
+
+### Spectrum Generation:
+The system initializes a Phillips or unified spectrum representing the ocean’s frequency energy based on wind direction, speed, and gravity constants.
+
+### FFT Evolution:
+Using a GPU-based FFT, the spectral data is advanced over time, evolving each wave’s amplitude and phase.
+
+### Inverse FFT:
+The frequency-domain data is transformed back into spatial heightfields and normal maps.
+
+### Choppy Displacement:
+Horvath’s horizontal displacement technique is applied to sharpen wave crests.
+
+### Rendering:
+The final heightfield is rendered using physically based shading, normal reconstruction, and seamless tiling.
+
+# 🎯 Goals
+<img width="1910" height="903" alt="image" src="https://github.com/user-attachments/assets/6929769a-bdcc-4147-b3c5-30c7f7a3eead" />
+
+### Real-time performance with physically grounded visuals
+
+### Scalable to large ocean scenes using tile-based rendering
+
+### GPU-only simulation for integration into real-time engines
+
+### Extensible for coupling with particles or foam generation
+
+# 📚 References
+
+Jos Stam, “Real-Time Fluid Dynamics for Games”, GDC 2003
+
+Jerry Tessendorf, “Simulating Ocean Water”, SIGGRAPH 2001
+
+Horvath, “Spectral Wave Models for Film and Game Production”, Disney Animation
+
+Arc Blanc, “Energy-Conserving Improvements to Tessendorf Spectra”
+
+# 🧑‍💻 Author
+Mohamed Tarek Mohamed 
+
+Computer Science, University of Toronto 
+
+Focused on real-time rendering, GPU systems, and simulation graphics.
