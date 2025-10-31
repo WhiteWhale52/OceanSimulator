@@ -1,0 +1,13 @@
+shaders:
+  - './shaders/**'
+
+
+# Documentation
+docs:
+  - 'docs/**'
+  - '*.md'
+
+# CI/CD
+ci:
+  - '.github/workflows/**'
+  - '.github/actions/**'
