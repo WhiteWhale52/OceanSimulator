@@ -47,6 +47,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install CMake 3.72
+      run: choco install cmake --version=3.72.0 -y
+      shell: pwsh
+
+    - name: Verify CMake version
+      run: cmake --version
+      shell: pwsh
+    
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
