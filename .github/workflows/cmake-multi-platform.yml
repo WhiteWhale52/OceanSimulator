@@ -54,6 +54,9 @@ jobs:
     - name: Install Ninja
       run: sudo apt-get install ninja-build
       if: runner.os == 'Linux'
+
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
       
     - name: Install CMake (Windows)
       if: runner.os == 'Windows'
@@ -65,7 +68,7 @@ jobs:
       shell: bash
       run: |
         sudo apt-get update -y
-        sudo apt-get install cmake
+        sudo apt-get install cmake=4.0.1-1ubuntu1
         # Optionally: install a specific newer version via kitware apt repo if needed.
 
     - name: Install CMake (macOS)
@@ -73,9 +76,7 @@ jobs:
       shell: bash
       run: |
         brew update
-        brew install cmake
-        brew unlink cmake
-        brew link cmake
+        brew install cmake@4.0
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
