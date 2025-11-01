@@ -57,6 +57,14 @@ jobs:
 
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install VulkanSDK (MacOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install vulkan-sdk
+        vulkaninfo
+    
       
     - name: Install CMake (Windows)
       if: runner.os == 'Windows'
@@ -67,16 +75,24 @@ jobs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        sudo apt-get update -y
-        sudo apt-get install cmake=4.0.1-1ubuntu1
-        # Optionally: install a specific newer version via kitware apt repo if needed.
+        sudo apt-get update
+        sudo apt-get remove --purge -y cmake
+        sudo apt-get install -y wget gnupg software-properties-common apt-transport-https
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
+          | sudo gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg
+        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
+          | sudo tee /etc/apt/sources.list.d/kitware.list
+        sudo apt-get update
+        wget https://cmake.org/files/v4.0/cmake-4.0.3-linux-x86_64.sh
+        sudo sh cmake-4.0.3-linux-x86_64.sh --skip-license --prefix=/usr/local
+        cmake --version
 
     - name: Install CMake (macOS)
       if: runner.os == 'macOS'
       shell: bash
       run: |
         brew update
-        brew install cmake@4.0
+        brew install cmake@4
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
