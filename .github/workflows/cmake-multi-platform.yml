@@ -64,7 +64,7 @@ jobs:
       run: |
         version="1.4.321.0"
         mkdir -p "$HOME/VulkanSDK/$version"
-        curl -L -o vulkansdk-macos-$VULKAN_VERSION.zip https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/mac/vulkan-sdk-macos-$VULKAN_VERSION.zip
+        curl -L -o vulkansdk-macos-$VULKAN_VERSION.zip https://sdk.lunarg.com/sdk/download/$version/mac/vulkansdk-macos-$version.zip
         INSTALL_DIR="$HOME/VulkanSDK/$VULKAN_VERSION"
         mkdir -p "$INSTALL_DIR"
         unzip vulkansdk-macos-$VULKAN_VERSION.zip -d "$INSTALL_DIR"
@@ -97,8 +97,8 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         $version="1.4.321.1"
-        Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe" -OutFile "VulkanSDK.exe"
-        ulkansdk-windows-X64-1.4.321.1.exe --accept-licenses --default-answer --confirm-command install
+        Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/vulkansdk-windows-X64-$version.exe" -OutFile "VulkanSDK.exe"
+        vulkansdk-windows-X64-1.4.321.1.exe --accept-licenses --default-answer --confirm-command install
         $env:VULKAN_SDK="C:\VulkanSDK\$version"
         $env:PATH="$env:VULKAN_SDK\Bin;$env:PATH"
         
