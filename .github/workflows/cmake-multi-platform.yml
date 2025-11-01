@@ -23,65 +23,59 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        build_type: [Release]
+        os: [ubuntu-24.04, windows-2022, macos-14]
+        build_type: [Release, Debug]
         c_compiler: [gcc, clang, cl]
         include:
-          - os: windows-latest
+          - os: windows-2022
             c_compiler: cl
             cpp_compiler: cl
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: gcc
             cpp_compiler: g++
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: clang
             cpp_compiler: clang++
-        exclude:
-          - os: windows-latest
+          - os: macos-14
             c_compiler: gcc
-          - os: windows-latest
+            cpp_compiler: g++
+        exclude:
+          - os: windows-2022
+            c_compiler: gcc
+          - os: windows-2022
             c_compiler: clang
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             c_compiler: cl
 
     steps:
     - uses: actions/checkout@v4
 
-   # Windows: install Chocolatey then CMake
-    - name: Install Chocolatey (Windows only)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        # Only attempt install if choco not found
-        if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-          Set-ExecutionPolicy Bypass -Scope Process -Force
-          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-          iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-        }
-
+    
+    - name: Install Ninja
+      run: sudo apt-get install ninja-build
+      if: runner.os == 'Linux'
+      
     - name: Install CMake (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
-      run: choco install cmake --version=4.0.4
+      run: choco install cmake 
 
-    # Ubuntu: use apt (or snap) to install CMake
     - name: Install CMake (Ubuntu)
       if: runner.os == 'Linux'
       shell: bash
       run: |
         sudo apt-get update -y
-        sudo apt-get install cmake=4.0.4-1ubuntu1
+        sudo apt-get install cmake
         # Optionally: install a specific newer version via kitware apt repo if needed.
 
-    # macOS: use Homebrew
     - name: Install CMake (macOS)
       if: runner.os == 'macOS'
       shell: bash
       run: |
         brew update
-        brew install cmake@4.0.4
+        brew install cmake
         brew unlink cmake
-        brew link cmake@4.0.4
+        brew link cmake
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
@@ -90,11 +84,10 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+    - name: Configure CMake with Ninja for Parallel Jobs
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -G Ninja
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
