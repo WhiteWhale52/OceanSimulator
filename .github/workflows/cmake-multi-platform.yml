@@ -62,7 +62,16 @@ jobs:
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        sudo ./vulkansdk-macOS-1.4.321.x.app/Contents/MacOS/vulkansdk-macOS-1.4.321.x 
+        version="1.4.321.0"
+        mkdir -p "$HOME/VulkanSDK/$version"
+        curl -L -o vulkansdk-macos-$VULKAN_VERSION.zip https://sdk.lunarg.com/sdk/download/$VULKAN_VERSION/mac/vulkan-sdk-macos-$VULKAN_VERSION.zip
+        INSTALL_DIR="$HOME/VulkanSDK/$VULKAN_VERSION"
+        mkdir -p "$INSTALL_DIR"
+        unzip vulkansdk-macos-$VULKAN_VERSION.zip -d "$INSTALL_DIR"
+        cd "$INSTALL_DIR"
+        export VULKAN_SDK="$HOME/VulkanSDK/$version"
+        export PATH="$VULKAN_SDK/bin:$PATH"
+        sudo ./vulkansdk-macOS-1.4.321.0.app/Contents/MacOS/vulkansdk-macOS-1.4.321.0 
         \ --root "installation path" 
         \ --accept-licenses --default-answer
         \ --confirm-command install
@@ -73,11 +82,26 @@ jobs:
       run: |
         sudo apt update
         sudo apt install xz-utils
+        sudo apt-get install libglm-dev cmake libxcb-dri3-0 libxcb-present0 libpciaccess0 \
+        libpng-dev libxcb-keysyms1-dev libxcb-dri3-dev libx11-dev g++ gcc \
+        libwayland-dev libxrandr-dev libxcb-randr0-dev libxcb-ewmh-dev \
+        git python-is-python3 bison libx11-xcb-dev liblz4-dev libzstd-dev \
+        ocaml-core ninja-build pkg-config libxml2-dev wayland-protocols python3-jsonschema \
+        clang-format qtbase5-dev qt6-base-dev
         wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
         sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.4.313-jammy.list https://packages.lunarg.com/vulkan/1.4.313/lunarg-vulkan-1.4.313-jammy.list
         sudo apt update
         sudo apt install vulkan-sdk
-    
+
+    - name: Download VulkanSDK (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        $version="1.4.321.1"
+        Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe" -OutFile "VulkanSDK.exe"
+        ulkansdk-windows-X64-1.4.321.1.exe --accept-licenses --default-answer --confirm-command install
+        $env:VULKAN_SDK="C:\VulkanSDK\$version"
+        $env:PATH="$env:VULKAN_SDK\Bin;$env:PATH"
+        
       
     - name: Install CMake (Windows)
       if: runner.os == 'Windows'
