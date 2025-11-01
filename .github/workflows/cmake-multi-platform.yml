@@ -47,13 +47,39 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install CMake 3.72
-      run: choco install cmake --version=3.72.0 -y
+   # Windows: install Chocolatey then CMake
+    - name: Install Chocolatey (Windows only)
+      if: runner.os == 'Windows'
       shell: pwsh
+      run: |
+        # Only attempt install if choco not found
+        if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+          Set-ExecutionPolicy Bypass -Scope Process -Force
+          [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+          iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        }
 
-    - name: Verify CMake version
-      run: cmake --version
+    - name: Install CMake (Windows)
+      if: runner.os == 'Windows'
       shell: pwsh
+      run: choco install cmake --version=4.0.4
+
+    # Ubuntu: use apt (or snap) to install CMake
+    - name: Install CMake (Ubuntu)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y cmake --version=4.0.4
+        # Optionally: install a specific newer version via kitware apt repo if needed.
+
+    # macOS: use Homebrew
+    - name: Install CMake (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew update
+        brew install cmake --version=4.0.4
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
