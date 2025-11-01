@@ -62,8 +62,21 @@ jobs:
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        brew install vulkan-sdk
-        vulkaninfo
+        sudo ./vulkansdk-macOS-1.4.321.x.app/Contents/MacOS/vulkansdk-macOS-1.4.321.x 
+        \ --root "installation path" 
+        \ --accept-licenses --default-answer
+        \ --confirm-command install
+
+    - name: Install VulkanSDK (Ubuntu)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install xz-utils
+        wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
+        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.4.313-jammy.list https://packages.lunarg.com/vulkan/1.4.313/lunarg-vulkan-1.4.313-jammy.list
+        sudo apt update
+        sudo apt install vulkan-sdk
     
       
     - name: Install CMake (Windows)
