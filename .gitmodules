@@ -1,6 +1,6 @@
 [submodule "external/VkFFT"]
 	path = external/VkFFT
-	url = https://github.com/DTolm/VkFFT
+	url = git@github.com:DTolm/VkFFT.git
 [submodule "external/VulkanMemoryAllocator"]
 	path = external/VulkanMemoryAllocator
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
