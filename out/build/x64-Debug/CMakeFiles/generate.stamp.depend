@@ -96,10 +96,10 @@ C:/Program Files/Microsoft Visual Studio/18/Insiders/Common7/IDE/CommonExtension
 C:/Program Files/Microsoft Visual Studio/18/Insiders/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-4.1/Modules/Platform/Windows-MSVC.cmake
 C:/Program Files/Microsoft Visual Studio/18/Insiders/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-4.1/Modules/Platform/Windows.cmake
 C:/Program Files/Microsoft Visual Studio/18/Insiders/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-4.1/Modules/Platform/WindowsPaths.cmake
-C:/Users/moham/Documents/GitHub/Fluid_Simulator/CMakeLists.txt
-C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc1/CMakeCXXCompiler.cmake
-C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc1/CMakeRCCompiler.cmake
-C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc1/CMakeSystem.cmake
+C:/Users/moham/Documents/GitHub/OceanSimulator/CMakeLists.txt
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc4/CMakeCXXCompiler.cmake
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc4/CMakeRCCompiler.cmake
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/CMakeFiles/4.1.1-msvc4/CMakeSystem.cmake
 C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/share/glfw3/glfw3Config.cmake
 C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/share/glfw3/glfw3ConfigVersion.cmake
 C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/share/glfw3/glfw3Targets-debug.cmake

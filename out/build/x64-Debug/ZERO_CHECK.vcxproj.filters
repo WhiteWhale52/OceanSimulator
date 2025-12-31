@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\Users\moham\Documents\GitHub\Fluid_Simulator\out\build\x64-Debug\CMakeFiles\e06f7abe539ebdd6e13039592cacb286\generate.stamp.rule">
+    <CustomBuild Include="C:\Users\moham\Documents\GitHub\OceanSimulator\out\build\x64-Debug\CMakeFiles\5fa00e2ff4ef5cb90c58294970fe02b3\generate.stamp.rule">
       <Filter>CMake Rules</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="CMake Rules">
-      <UniqueIdentifier>{EBEDB049-994C-38CB-843C-FA4F31963B67}</UniqueIdentifier>
+      <UniqueIdentifier>{69EA0EC0-6C88-314A-B64F-8DE52F9B5C7B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
