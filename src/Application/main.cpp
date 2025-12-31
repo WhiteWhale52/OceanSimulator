@@ -2,7 +2,7 @@
 #include <Logging/Logger.h>
 #include <Vulkan/VulkanContext.h>
 #include <Vulkan/VulkanInit.h>
-#include "AppConfig.h"
+#include <Config/appConfig.h>
 
 int main() {
 	
@@ -13,7 +13,7 @@ int main() {
 
 	Core::Vulkan::VulkanContext context{};
 
-	Core::Vulkan::CreateInstance(context);
+	Core::Vulkan::CreateInstance(context, appConfig);
 	Core::Vulkan::ChoosePhysicalDevice(context);
 	Core::Vulkan::CreateDeviceAndQueues(context);
 	Core::Vulkan::CreateCommandPools(context);

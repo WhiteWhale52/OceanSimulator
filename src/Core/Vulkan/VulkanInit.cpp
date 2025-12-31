@@ -4,7 +4,7 @@
 namespace Core::Vulkan {
 
 
-	void CreateInstance(VulkanContext& context)
+	void CreateInstance(VulkanContext& context, const AppConfig& appConfig)
 	{
 		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
 
@@ -33,10 +33,10 @@ namespace Core::Vulkan {
 		version &= ~(0xFFFU);
 
 		vk::ApplicationInfo appInfo = vk::ApplicationInfo(
-			"Ocean Simulator",
-			version,
-			"Doing it the right way",
-			version,
+			appConfig.appName,
+			appConfig.appVersion,
+			appConfig.engineName,
+			appConfig.engineVersion,
 			version
 		);
 
@@ -99,7 +99,10 @@ namespace Core::Vulkan {
 	}
 	void CreateDeviceAndQueues(VulkanContext& context)
 	{
+
 	}
+	
+	
 	void CreateCommandPools(VulkanContext& context)
 	{
 	}
