@@ -7,7 +7,7 @@ target_include_directories(Renderer PUBLIC
 target_sources(Renderer PUBLIC
 "Renderer.cpp"
 "FFT/VkFFTSystem.cpp"
-)
+ "Renderer.h")
 
 target_link_libraries(Renderer PUBLIC
     Core

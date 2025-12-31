@@ -4,7 +4,7 @@
 namespace Core::Vulkan {
 
 
-	void CreateInstance(VulkanContext& context, const AppConfig& appConfig)
+	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
 		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
 
@@ -95,10 +95,20 @@ namespace Core::Vulkan {
 	}
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
+		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
+		logger->print("Choosing physical device...");
+		std::vector<vk::PhysicalDevice> physicalDevices = context.instance.enumeratePhysicalDevices();
 
+		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
+			logger->logDevice(physicalDevice);
+			//if (is_suitable(physicalDevice)) 
+			context.physicalDevice = physicalDevice;
+		}
+		throw std::runtime_error("No suitable physical device was found");
 	}
 	void CreateDeviceAndQueues(VulkanContext& context)
 	{
+		vk::DeviceCreateInfo deviceCreateInfo{};
 
 	}
 	
@@ -108,6 +118,31 @@ namespace Core::Vulkan {
 	}
 	void Destroy(VulkanContext& context)
 	{
+		if (context.logicalDevice) {
+			context.logicalDevice.waitIdle();
+		}
+
+		if (context.computeCmdPool) {
+			context.logicalDevice.destroyCommandPool(context.computeCmdPool);
+			context.computeCmdPool = VK_NULL_HANDLE;
+		}
+
+		if (context.graphicsCmdPool) {
+			context.logicalDevice.destroyCommandPool(context.graphicsCmdPool);
+			context.graphicsCmdPool = VK_NULL_HANDLE;
+		}
+
+		if (context.logicalDevice) {
+			context.logicalDevice.destroy();
+			context.logicalDevice = VK_NULL_HANDLE;
+		}
+
+
+		if (context.instance) {
+			context.instance.destroy();
+			context.instance = VK_NULL_HANDLE;
+		}
+
 	}
 
 

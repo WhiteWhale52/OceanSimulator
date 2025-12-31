@@ -4,7 +4,7 @@
 #include "Config/AppConfig.h"
 
 namespace Core::Vulkan {
-	void CreateInstance(VulkanContext& context, const AppConfig& appConfig);
+	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig);
 	bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers);
 
 

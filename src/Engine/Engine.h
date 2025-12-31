@@ -2,6 +2,8 @@
 
 #include <GLFW/glfw3.h>
 #include "Vulkan/config.h"
+#include <Renderer.h>
+
 
 /*
 * including the prebuilt header from the lunarg sdk will load
@@ -22,37 +24,40 @@
 	We will look at this later, once we've created an instance and device.
 */
 
-class Engine {
+namespace Engine {
 
-private:
+	class Engine {
 
-	// Whether to promnt debug messages in functions
-	bool debugMode = true;
+	private:
 
-
-	// GLFW Window parameters
-	int width{ 640 };
-	int height{ 480 };
-	GLFWwindow* window{ nullptr };
-
-	vk::PhysicalDevice physicalDevice{ nullptr };
-
-	
-	vk::Instance instance{ nullptr };
-
-	VkDebugUtilsMessengerEXT debugMessenger{ nullptr };
+		// Whether to promnt debug messages in functions
+		bool debugMode = true;
 
 
-	void build_glfw_window();
+		// GLFW Window parameters
+		int width{ 640 };
+		int height{ 480 };
+		GLFWwindow* window{ nullptr };
+
+		vk::PhysicalDevice physicalDevice{ nullptr };
 
 
-	void make_instance();
+		vk::Instance instance{ nullptr };
 
-	void make_debug_messenger();
+		VkDebugUtilsMessengerEXT debugMessenger{ nullptr };
 
-public: 
-	Engine();
 
-	~Engine();
+		void build_glfw_window();
 
-};
+
+		void make_instance();
+
+		void make_debug_messenger();
+
+	public:
+		Engine(Renderer::Renderer renderer);
+
+		~Engine();
+
+	};
+}

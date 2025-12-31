@@ -1,3 +1,6 @@
 C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/CMakeFiles/ALL_BUILD.dir
 C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/CMakeFiles/ZERO_CHECK.dir
 C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Core/CMakeFiles/Core.dir
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Renderer/CMakeFiles/Renderer.dir
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Engine/CMakeFiles/Engine.dir
+C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Application/CMakeFiles/OceanApp.dir
