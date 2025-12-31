@@ -17,5 +17,4 @@ namespace Core::Vulkan {
 		vk::CommandPool graphicsCmdPool = VK_NULL_HANDLE;
 		vk::CommandPool computeCmdPool = VK_NULL_HANDLE;
 	};
-	VulkanContext context;
 }

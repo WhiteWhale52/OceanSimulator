@@ -9,10 +9,6 @@ Engine::Engine() {
 		std::cout << "Making a graphics window \n" ;
 	}
 
-
-	make_instance();
-
-	physicalDevice = Core::Vulkan::context.physicalDevice;
 }
 
 void Engine::build_glfw_window() {
@@ -36,9 +32,6 @@ void Engine::build_glfw_window() {
 }
 
 
-void Engine::make_instance() {
-	instance = Core::Vulkan::context.instance;
-}
 
 void Engine::make_debug_messenger() {
 	if (!debugMode) {

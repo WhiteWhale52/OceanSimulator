@@ -48,9 +48,7 @@ target_include_directories(Core
 
 target_sources(Core
     PRIVATE
-        "Vulkan/Instance.cpp"
-        "Vulkan/PhyDevice.cpp"
-        "Vulkan/LDevice.cpp"
+       
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
 
