@@ -1,9 +1,12 @@
-[submodule "external/VkFFT"]
-	path = external/VkFFT
-	url = git@github.com:DTolm/VkFFT.git
-[submodule "external/VulkanMemoryAllocator"]
-	path = external/VulkanMemoryAllocator
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
 [submodule "external/external/imGUI"]
 	path = external/external/imGUI
 	url = git@github.com:ocornut/imgui.git
+[submodule "external/--name"]
+	path = external/--name
+	url = git@github.com:DTolm/VkFFT.git
+[submodule "external/VulkanMemoryAllocator"]
+	path = external/VulkanMemoryAllocator
+	url = git@github.com:GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+[submodule "external/VkFFT"]
+	path = external/VkFFT
+	url = git@github.com:DTolm/VkFFT.git
