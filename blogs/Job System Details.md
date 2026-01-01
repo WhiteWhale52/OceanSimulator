@@ -11,10 +11,10 @@
 * A Job Scheduler which would enqueue and dequeue jobs into/out of the Job Queue
 
 * A Job which is a unit of work and in our case, we define as `using JobFn = std::function<void()>;`
-
-
-
-
+  
+  
+  
+  
 
 ### The Core Layer should include the classes needed to implement the Job System
 
@@ -28,4 +28,4 @@
 
 * Atomic wrappers
 
-* Core::Logger (thread-safe)
+* Core::Logging::Logger (thread-safe)

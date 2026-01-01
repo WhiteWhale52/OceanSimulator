@@ -1,12 +1,14 @@
 # Long-term goals and features
 
-- [ ] Integrate ECS, perhaps?? I am going to use [entt](https://github.com/skypjack/entt), to do that.
+- [ ] Integrate ECS, perhaps?? I am going to use [entt](https://github.com/skypjack/entt) to do that.
 
 - [ ] Integrate a profiler, perhaps ?? I am thinking of using [optick: C++ Profiler For Games](https://github.com/bombomby/optick)
 
 - [ ] Integrate clang-tidy to enforce code style
 
 - [ ] Create automated tests 
+
+- [ ] I need lighting, more details will be provided later.
 
 ### Layers
 
@@ -101,8 +103,8 @@
   * We need to **implement different Timing mechanisms**
   
   * Handle inputs by polling events every iteration 
-  
-  
+    
+    
 
 ### Learning Concepts
 
