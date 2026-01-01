@@ -1,6 +1,12 @@
 # Long-term goals and features
 
+- [ ] Integrate ECS, perhaps?? I am going to use [entt](https://github.com/skypjack/entt), to do that.
 
+- [ ] Integrate a profiler, perhaps ?? I am thinking of using [optick: C++ Profiler For Games](https://github.com/bombomby/optick)
+
+- [ ] Integrate clang-tidy to enforce code style
+
+- [ ] Create automated tests 
 
 ### Layers
 
@@ -95,10 +101,8 @@
   * We need to **implement different Timing mechanisms**
   
   * Handle inputs by polling events every iteration 
-
-- [ ] Add GitHub Actions to this project
-
-- [ ] Add unit tests using clang-tidy
+  
+  
 
 ### Learning Concepts
 
@@ -113,5 +117,7 @@
 - [ ] Read the memory management chapter of Vulkan Spec
 
 - [ ] Read about Resource Managment
+
+- [ ] Read about creating a Job System for the Engine layer
 
 - [ ] 
