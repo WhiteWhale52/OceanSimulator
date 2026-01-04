@@ -93,6 +93,7 @@ namespace Core::Vulkan {
 #endif
 		}
 	}
+
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
 		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
@@ -101,11 +102,13 @@ namespace Core::Vulkan {
 
 		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
 			logger->logDevice(physicalDevice);
-			//if (is_suitable(physicalDevice)) 
+			if (IsPhyDeviceSuitable(physicalDevice)) 
 			context.physicalDevice = physicalDevice;
 		}
-		throw std::runtime_error("No suitable physical device was found");
+		//throw std::runtime_error("No suitable physical device was found");
 	}
+	
+	
 	void CreateDeviceAndQueues(VulkanContext& context)
 	{
 		vk::DeviceCreateInfo deviceCreateInfo{};
@@ -148,7 +151,7 @@ namespace Core::Vulkan {
 
 
 
-	bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
+	bool static InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
 		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
@@ -199,6 +202,54 @@ namespace Core::Vulkan {
 		}
 
 
+		return true;
+	}
+
+
+	bool static PhyDeviceSupported(
+		const vk::PhysicalDevice& physicalDevice,
+		const char** ppRequestedExtensions,
+		const uint32_t requestedExtensionCount) {
+
+		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
+		logger->print("The requested Physical Device Extensions");
+		logger->print_list(ppRequestedExtensions, requestedExtensionCount);
+
+		std::vector<vk::ExtensionProperties> extensions = physicalDevice.enumerateDeviceExtensionProperties();
+		logger->print("Physical Device Supported Extensions: ");
+		logger->print_extensions(extensions);
+
+		for (uint32_t i = 0; i < requestedExtensionCount; ++i) {
+			bool supported = false;
+
+			for (vk::ExtensionProperties& extension : extensions) {
+				char* name = extension.extensionName;
+				if (strcmp(name, ppRequestedExtensions[i]) == 0) {
+					supported = true;
+					break;
+				}
+			}
+			if (!supported) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool static IsPhyDeviceSuitable(const vk::PhysicalDevice& physicalDevice) {
+		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
+
+		logger->print("Checking if device is suitable");
+
+		const char* ppRequestedExtension = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
+
+		if (PhyDeviceSupported(physicalDevice, &ppRequestedExtension, 1)) {
+			logger->print("Device can support the requested extensions!");
+		}
+		else {
+			logger->print("Device can't support the requested extensions!");
+			return false;
+		}
 		return true;
 	}
 }

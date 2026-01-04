@@ -1,12 +1,13 @@
 add_library(Core STATIC)
 
-set(Vulkan_INCLUDE_DIR "$ENV{VULKAN_SDK}/Include")
+
 
 
 # ---- Including Vulkan ----
 if (Vulkan_FOUND)
     message(STATUS "Vulkan found at: ${Vulkan_INCLUDE_DIRS}")
     include_directories(${Vulkan_INCLUDE_DIRS})
+
 else()
     message(FATAL_ERROR "Vulkan SDK not found! Please set VULKAN_SDK environment variable.")
 endif()
@@ -58,6 +59,7 @@ target_sources(Core
 target_link_libraries(Core PUBLIC
         glfw
         Vulkan::Vulkan
+        Vulkan::glslang
         VkFFT
         VulkanMemoryAllocator
 )

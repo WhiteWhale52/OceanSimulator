@@ -15,5 +15,8 @@ namespace Core::Vulkan {
 	void CreateCommandPools(VulkanContext& context);
 
 	void Destroy(VulkanContext& context);
+	
+	
+	bool static IsPhyDeviceSuitable(const vk::PhysicalDevice& physicalDevice);
 
 }

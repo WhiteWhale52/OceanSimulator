@@ -9,7 +9,7 @@ int main() {
 	Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
 	logger->set_mode(true);
 
-	AppConfig appConfig{};
+	Core::Config::AppConfig appConfig{};
 
 	Core::Vulkan::VulkanContext context{};
 
@@ -18,8 +18,8 @@ int main() {
 	Core::Vulkan::CreateDeviceAndQueues(context);
 	Core::Vulkan::CreateCommandPools(context);
 
-	Engine* graphicsEngine = new Engine();
-	delete graphicsEngine;
-
+//	Engine::Engine* graphicsEngine = new Engine::Engine();
+//	delete graphicsEngine;
+	Core::Vulkan::Destroy(context);
 	return 0;
 }

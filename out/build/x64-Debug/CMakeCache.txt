@@ -233,7 +233,7 @@ Vulkan_GLSLANG_VALIDATOR_EXECUTABLE:FILEPATH=C:/VulkanSDK/1.4.321.1/Bin/glslangV
 Vulkan_GLSLC_EXECUTABLE:FILEPATH=C:/VulkanSDK/1.4.321.1/Bin/glslc.exe
 
 //Path to a file.
-Vulkan_INCLUDE_DIR:PATH=C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/include
+Vulkan_INCLUDE_DIR:PATH=C:/VulkanSDK/1.4.321.1/include
 
 //Path to a library.
 Vulkan_LIBRARY:FILEPATH=C:/VulkanSDK/1.4.321.1/Lib/vulkan-1.lib
@@ -424,7 +424,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding Vulkan
-FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.4.321.1/Lib/vulkan-1.lib][C:/Users/moham/Documents/GitHub/vcpkg/installed/x64-windows/include][found components: glslang glslc glslangValidator ][v1.4.309()]
+FIND_PACKAGE_MESSAGE_DETAILS_Vulkan:INTERNAL=[C:/VulkanSDK/1.4.321.1/Lib/vulkan-1.lib][C:/VulkanSDK/1.4.321.1/include][found components: glslang glslc glslangValidator ][v1.4.321()]
 //Install the dependencies listed in your manifest:
 //\n    If this is off, you will have to manually install your dependencies.
 //\n    See https://github.com/microsoft/vcpkg/tree/master/docs/specifications/manifests.md
