@@ -6,7 +6,7 @@ namespace Core::Vulkan {
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
-
+		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		logger->print("Making an instance");
 
 		/*
@@ -57,12 +57,10 @@ namespace Core::Vulkan {
 
 
 
-		logger->print("extensions to be requested");
+		logger->print("Instance Extensions to be requested");
 		for (const char* extensionName : extensions) {
-			logger->print( "\t\"", extensionName ,"\"\n");
+			logger->print("\t\"extensionName\"");
 		}
-		//logger->print_list(&extensions[0], extensions.size());
-
 
 		std::vector<const char*> layers;
 
@@ -89,7 +87,7 @@ namespace Core::Vulkan {
 		}
 		catch (vk::SystemError err) {
 #if DEBUG_VULKAN	
-			std::cout << "Failed to create the instance \n";
+			logger->print("Failed to create the instance");
 #endif
 		}
 	}
@@ -102,50 +100,62 @@ namespace Core::Vulkan {
 	/// <param name="context">Global Vulkan Context</param>
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
-		logger->print("Choosing physical device...");
+		Logging::Logger* logger = Core::Logging::Logger::get_logger();
+		logger->print("\nChoosing physical device...");
 		std::vector<vk::PhysicalDevice> physicalDevices = context.instance.enumeratePhysicalDevices();
 
 		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
 			logger->logDevice(physicalDevice);
 			PhysicalDeviceRequirements reqs;
 			reqs.requiredExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-			if (IsDeviceSuitable(physicalDevice, reqs)) {
-				context.physicalDevice = physicalDevice;
-				uint32_t queueFamilyCount = 0;
-				std::vector<vk::QueueFamilyProperties> queueFamiliesProperties = physicalDevice.getQueueFamilyProperties();
-				logger->print("\nPhysical Device supports", queueFamiliesProperties.size(), "Queue Families.");
-				for (uint32_t i = 0; i < queueFamiliesProperties.size(); i++) {
+			if (!IsDeviceSuitable(physicalDevice, reqs))
+			{
+				logger->print(physicalDevice.getProperties().deviceName, "doesn't not meet requirements");
+				continue;
+			}
+			context.physicalDevice = physicalDevice;
+			uint32_t queueFamilyCount = 0;
+			std::vector<vk::QueueFamilyProperties> queueFamiliesProperties = physicalDevice.getQueueFamilyProperties();
+			logger->print("\nPhysical Device supports", queueFamiliesProperties.size(), "Queue Families.");
+			bool foundGraphicsQFamily = false;
+			bool foundComputeQFamily = false;
+			bool choseTransferQFamily = false;
+			bool chosesparseBindingQFamily = false;
+				
+			for (uint32_t i = 0; i < queueFamiliesProperties.size(); i++) {
 #if DEBUG_VULKAN
-					logger->print("Queue Family", i);
-					logger->print("Has", queueFamiliesProperties[i].queueCount, "queues");
-					logger->print("Supports graphics:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics));
-					logger->print("Supports compute:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute));
-					logger->print("Supports sparse binding:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eSparseBinding));
+				logger->print("\tQueue Family", i);
+				logger->print("\t\tHas", queueFamiliesProperties[i].queueCount, "queues");
+				logger->print("\t\tSupports graphics:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics));
+				logger->print("\t\tSupports compute:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute));
+				logger->print("\t\tSupports sparse binding:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eSparseBinding));
 #endif
-					bool choseGraphicsQFamily = false;
-					bool choseComputeQFamily = false;
-					bool choseTransferQFamily = false;
-					bool chosesparseBindingQFamily = false;
 					
+				auto flags = queueFamiliesProperties[i].queueFlags;
 
-					if (queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics && !choseGraphicsQFamily)
-					{
-						context.graphicsQueueFamily = i;
-						logger->print("\nGraphics Queue Family Index:", i);
-						choseGraphicsQFamily = true;
-					}
-
-					if (queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute && 
-						choseGraphicsQFamily && !choseComputeQFamily) {
-						context.computeQueueFamily = i;
-						logger->print("\nCompute Queue Family Index:", i);
-						choseComputeQFamily = true;
-					}
-
+				if ((flags & vk::QueueFlagBits::eGraphics) && !foundGraphicsQFamily)
+				{
+					context.graphicsQueueFamily = i;
+					logger->print("Graphics Queue Family Index:", i);
+					foundGraphicsQFamily = true;
 				}
 
-				return;
+				if ((flags & vk::QueueFlagBits::eCompute) &&
+					!(flags & vk::QueueFlagBits::eGraphics) &&
+					!foundComputeQFamily) {
+					context.computeQueueFamily = i;
+					logger->print("Compute Queue Family Index:", i);
+					foundComputeQFamily = true;
+				}
+
+
 			}
+			if (!foundComputeQFamily && foundGraphicsQFamily) {
+				context.computeQueueFamily = context.graphicsQueueFamily;
+				logger->print("Using graphics queue family as fallback, so compute family index is:", context.computeQueueFamily);
+			}
+
+				return;
 		}
 
 	}
@@ -193,7 +203,6 @@ namespace Core::Vulkan {
 		};
 		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
 		deviceCreateInfo.ppEnabledLayerNames = layers.data();
-		Logging::Logger* logger = Logging::Logger::get_logger();
 #endif
 		context.logicalDevice = context.physicalDevice.createDevice(deviceCreateInfo);
 		
@@ -202,6 +211,7 @@ namespace Core::Vulkan {
 
 
 #if DEBUG_VULKAN
+		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		logger->print("Logical Device Creation Successful.");
 #endif
 	}
@@ -216,13 +226,14 @@ namespace Core::Vulkan {
 
 	bool static InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
+		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
 		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
 
 #if DEBUG_VULKAN
-		std::cout << "\nThe instance supports the following extensions: \n";
+		logger->print("The instance supports the following extensions:");
 		for (const vk::ExtensionProperties& supportedExtension : supportedExtensions) {
-			std::cout << "\t\"" << supportedExtension.extensionName << "\"\n";
+			logger->print("\t\"",supportedExtension.extensionName,"\"\n");
 		}
 #endif 
 		bool found;

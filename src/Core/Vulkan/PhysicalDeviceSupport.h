@@ -20,14 +20,13 @@ namespace Core::Vulkan {
 		if (physicalDeviceProperties.deviceType != reqs.requiredDeviceType) {
 			return false;
 		}
-		logger->print(physicalDeviceProperties.deviceName);
 		logger->print("The requested Physical Device Extensions");
 		for (const char* requestedExtension : reqs.requiredExtensions) {
-			logger->print("\t\"",requestedExtension, "\"");
+			logger->print("\t\"",requestedExtension,"\"");
 		}
 		std::vector<vk::ExtensionProperties> extensions = physicalDevice.enumerateDeviceExtensionProperties();
-		logger->print("Physical Device Supported Extensions: ");
 		
+		logger->print("The Physical Device supports the following Extensions: ");
 		for (const char* requestedExtension : reqs.requiredExtensions) {
 			bool supported = false;
 
@@ -35,7 +34,7 @@ namespace Core::Vulkan {
 				char* name = extension.extensionName;
 				if (strcmp(name, requestedExtension) == 0) {
 					supported = true;
-					logger->print("\tPhysical Device supports", requestedExtension);
+					logger->print("\t",requestedExtension);
 					break;
 				}
 			}
@@ -44,7 +43,7 @@ namespace Core::Vulkan {
 				return false;
 			}
 		}
-
+		return true;
 		
 	}
 

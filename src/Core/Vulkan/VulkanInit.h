@@ -19,6 +19,4 @@ namespace Core::Vulkan {
 	void Destroy(VulkanContext& context);
 	
 	
-	bool static IsPhyDeviceSuitable(const vk::PhysicalDevice& physicalDevice);
-	Logging::Logger* logger = Core::Logging::Logger::get_logger();
 }
