@@ -7,9 +7,10 @@
 int main() {
 	
 	Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
-	logger->set_mode(true);
 
 	Core::Config::AppConfig appConfig{};
+	appConfig.appName = "Ocean Waves";
+	appConfig.engineName = "Engine Name";
 
 	Core::Vulkan::VulkanContext context{};
 

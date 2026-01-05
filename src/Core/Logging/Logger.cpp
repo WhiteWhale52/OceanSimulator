@@ -48,9 +48,7 @@ namespace Core::Logging {
 
 	Logger* Logger::logger;
 
-	void Logger::set_mode(bool mode) {
-		enabled = mode;
-	}
+
 
 	Logger* Logger::get_logger() {
 		if (!logger) {
@@ -60,17 +58,14 @@ namespace Core::Logging {
 		return logger;
 	}
 
-	bool Logger::is_enabled() {
-		return enabled;
+
+	void Logger::print() {
+		std::cout  << std::endl;
 	}
 
-	void Logger::print(std::string message) {
-		if (!enabled) return;
-		std::cout << message << std::endl;
-	}
+	
 
 	void Logger::report_version_number(uint32_t version) {
-		if (!enabled) return;
 
 		std::cout << "System can support Vulkan Variant: " << vk::apiVersionVariant(version)
 			<< ", Major: " << vk::apiVersionMajor(version)
@@ -80,7 +75,6 @@ namespace Core::Logging {
 	}
 
 	void Logger::print_list(const char** list, uint32_t count) {
-		if (!enabled) return;
 
 		for (uint32_t i = 0; i < count; i++) {
 			std::cout << "\t\"" << list[i] << "\"" << std::endl;
@@ -88,7 +82,6 @@ namespace Core::Logging {
 	}
 
 	void Logger::print_extensions(const std::vector<vk::ExtensionProperties>& extensions) {
-		if (!enabled) return;
 
 		for (vk::ExtensionProperties extension : extensions) {
 			std::cout << "\t\"" << extension.extensionName << "\"" << std::endl;
@@ -96,7 +89,6 @@ namespace Core::Logging {
 	}
 
 	void Logger::print_layers(const std::vector<vk::LayerProperties>& layers) {
-		if (!enabled) return;
 
 		for (vk::LayerProperties layer : layers) {
 			std::cout << "\t\"" << layer.layerName << "\"" << std::endl;
@@ -104,7 +96,6 @@ namespace Core::Logging {
 	}
 
 	void Logger::logDevice(const vk::PhysicalDevice& physicalDevice) {
-		if (!enabled) return;
 
 		vk::PhysicalDeviceProperties2 physicalDeviceProperties = physicalDevice.getProperties2();
 

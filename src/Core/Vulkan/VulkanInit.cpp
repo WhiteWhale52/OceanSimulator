@@ -1,13 +1,11 @@
 #include "VulkanInit.h"
-#include "Logging/Logger.h"
+#include "PhysicalDeviceSupport.h"
 
 namespace Core::Vulkan {
 
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
-		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
-
 
 		logger->print("Making an instance");
 
@@ -32,11 +30,12 @@ namespace Core::Vulkan {
 
 		version &= ~(0xFFFU);
 
+
 		vk::ApplicationInfo appInfo = vk::ApplicationInfo(
 			appConfig.appName,
-			appConfig.appVersion,
+			(appConfig.appVersion == 0) ? version : appConfig.appVersion,
 			appConfig.engineName,
-			appConfig.engineVersion,
+			(appConfig.engineVersion == 0) ? version : appConfig.engineVersion,
 			version
 		);
 
@@ -47,6 +46,7 @@ namespace Core::Vulkan {
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+		extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
 		// This is where we add any new extensions we want to check
 		// extensions were the extensions required by glfw
@@ -59,9 +59,9 @@ namespace Core::Vulkan {
 
 		logger->print("extensions to be requested");
 		for (const char* extensionName : extensions) {
-			std::cout << "\t\"" << extensionName << "\"\n";
+			logger->print( "\t\"", extensionName ,"\"\n");
 		}
-		logger->print_list(&extensions[0], extensions.size());
+		//logger->print_list(&extensions[0], extensions.size());
 
 
 		std::vector<const char*> layers;
@@ -94,31 +94,183 @@ namespace Core::Vulkan {
 		}
 	}
 
+
+	/// <summary>
+	/// Chooses a Physical Device
+	/// Sets up the context's queue family indices
+	/// </summary>
+	/// <param name="context">Global Vulkan Context</param>
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
-		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		logger->print("Choosing physical device...");
 		std::vector<vk::PhysicalDevice> physicalDevices = context.instance.enumeratePhysicalDevices();
 
 		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
 			logger->logDevice(physicalDevice);
-			if (IsPhyDeviceSuitable(physicalDevice)) 
-			context.physicalDevice = physicalDevice;
+			PhysicalDeviceRequirements reqs;
+			reqs.requiredExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+			if (IsDeviceSuitable(physicalDevice, reqs)) {
+				context.physicalDevice = physicalDevice;
+				uint32_t queueFamilyCount = 0;
+				std::vector<vk::QueueFamilyProperties> queueFamiliesProperties = physicalDevice.getQueueFamilyProperties();
+				logger->print("\nPhysical Device supports", queueFamiliesProperties.size(), "Queue Families.");
+				for (uint32_t i = 0; i < queueFamiliesProperties.size(); i++) {
+#if DEBUG_VULKAN
+					logger->print("Queue Family", i);
+					logger->print("Has", queueFamiliesProperties[i].queueCount, "queues");
+					logger->print("Supports graphics:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics));
+					logger->print("Supports compute:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute));
+					logger->print("Supports sparse binding:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eSparseBinding));
+#endif
+					bool choseGraphicsQFamily = false;
+					bool choseComputeQFamily = false;
+					bool choseTransferQFamily = false;
+					bool chosesparseBindingQFamily = false;
+					
+
+					if (queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics && !choseGraphicsQFamily)
+					{
+						context.graphicsQueueFamily = i;
+						logger->print("\nGraphics Queue Family Index:", i);
+						choseGraphicsQFamily = true;
+					}
+
+					if (queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute && 
+						choseGraphicsQFamily && !choseComputeQFamily) {
+						context.computeQueueFamily = i;
+						logger->print("\nCompute Queue Family Index:", i);
+						choseComputeQFamily = true;
+					}
+
+				}
+
+				return;
+			}
 		}
-		//throw std::runtime_error("No suitable physical device was found");
+
 	}
 	
 	
 	void CreateDeviceAndQueues(VulkanContext& context)
 	{
-		vk::DeviceCreateInfo deviceCreateInfo{};
+		std::set<uint32_t> uniqueQueueFamilies = {
+		   context.graphicsQueueFamily,
+		   context.computeQueueFamily
+		};
 
+		float priority = 1.0f;
+		std::vector<vk::DeviceQueueCreateInfo> deviceQueuesCI;
+
+		for (uint32_t queueFamily : uniqueQueueFamilies) {
+
+			vk::DeviceQueueCreateInfo queueCreateInfo;
+			queueCreateInfo.queueFamilyIndex = queueFamily;
+			queueCreateInfo.queueCount = 1;
+			queueCreateInfo.pQueuePriorities = &priority;
+			deviceQueuesCI.emplace_back(queueCreateInfo);
+		}
+
+		vk::PhysicalDeviceFeatures phyDeviceFeatures = context.physicalDevice.getFeatures();
+		phyDeviceFeatures.geometryShader = VK_TRUE;
+		phyDeviceFeatures.samplerAnisotropy = VK_TRUE;
+		phyDeviceFeatures.sparseBinding = VK_TRUE;
+		phyDeviceFeatures.tessellationShader = VK_TRUE;
+
+
+		std::vector<const char*> deviceExtensions;
+		deviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+		
+
+		vk::DeviceCreateInfo deviceCreateInfo{};
+		deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(deviceQueuesCI.size());
+		deviceCreateInfo.pQueueCreateInfos = deviceQueuesCI.data();
+		deviceCreateInfo.pEnabledFeatures = &phyDeviceFeatures;
+		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+		deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
+#if DEBUG_VULKAN
+		std::vector<const char*> layers{
+			"VK_LAYER_KHRONOS_validation",
+		};
+		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+		deviceCreateInfo.ppEnabledLayerNames = layers.data();
+		Logging::Logger* logger = Logging::Logger::get_logger();
+#endif
+		context.logicalDevice = context.physicalDevice.createDevice(deviceCreateInfo);
+		
+		context.computeQueue = context.logicalDevice.getQueue(context.computeQueueFamily, 0);
+		context.graphicsQueue = context.logicalDevice.getQueue(context.graphicsQueueFamily, 0);
+
+
+#if DEBUG_VULKAN
+		logger->print("Logical Device Creation Successful.");
+#endif
 	}
 	
 	
 	void CreateCommandPools(VulkanContext& context)
 	{
 	}
+
+
+
+
+	bool static InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
+	{
+		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
+		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
+
+#if DEBUG_VULKAN
+		std::cout << "\nThe instance supports the following extensions: \n";
+		for (const vk::ExtensionProperties& supportedExtension : supportedExtensions) {
+			std::cout << "\t\"" << supportedExtension.extensionName << "\"\n";
+		}
+#endif 
+		bool found;
+		for (const char* extension : extensions) {
+			found = false;
+			for (const vk::ExtensionProperties& supportedExtension : supportedExtensions) {
+				if (strcmp(supportedExtension.extensionName, extension) == 0) {
+					found = true;
+					std::cout << "\nInstance Extension \"" << extension << "\" is supported";
+				}
+			}
+			if (!found) {
+#if DEBUG_VULKAN		
+					std::cout << "\nInstance Extension \"" << extension << "\" is not supported";
+#endif
+					return false;
+			}
+		}
+
+#if DEBUG_VULKAN
+			std::cout << "\nThe instance supports the following layers: \n";
+			for (const vk::LayerProperties& supportedLayer : supportedLayers) {
+				std::cout << "\t\"" << supportedLayer.layerName << "\"\n";
+			}
+#endif
+		for (const char* layer : layers) {
+			found = false;
+			for (const vk::LayerProperties& supportedLayer : supportedLayers) {
+				if (strcmp(supportedLayer.layerName, layer) == 0) {
+					found = true;
+					std::cout << "Instance Layer \"" << layer << "\" is supported\n";
+				}
+			}
+			if (!found) {
+#if DEBUG_VULKAN
+					std::cout << "Instance Layer \"" << layer << "\" is not supported\n";
+#endif				
+					return false;
+			}
+		}
+
+
+		return true;
+	}
+
+
+	
+	
 	void Destroy(VulkanContext& context)
 	{
 		if (context.logicalDevice) {
@@ -147,109 +299,5 @@ namespace Core::Vulkan {
 		}
 
 	}
-
-
-
-
-	bool static InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
-	{
-		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
-		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
-
-#if DEBUG_VULKAN
-		std::cout << "\nThe device supports the following extensions: \n";
-		for (vk::ExtensionProperties supportedExtension : supportedExtensions) {
-			std::cout << "\t\"" << supportedExtension.extensionName << "\"\n";
-		}
-#endif 
-		bool found;
-		for (const char* extension : extensions) {
-			found = false;
-			for (vk::ExtensionProperties supportedExtension : supportedExtensions) {
-				if (strcmp(supportedExtension.extensionName, extension) == 0) {
-					found = true;
-					std::cout << "\nExtension \"" << extension << "\" is supported";
-				}
-			}
-			if (!found) {
-#if DEBUG_VULKAN		
-					std::cout << "\nExtension \"" << extension << "\" is not supported";
-#endif
-					return false;
-			}
-		}
-
-#if DEBUG_VULKAN
-			std::cout << "\nThe device supports the following layers: \n";
-			for (vk::LayerProperties supportedLayer : supportedLayers) {
-				std::cout << "\t\"" << supportedLayer.layerName << "\"\n";
-			}
-#endif
-		for (const char* layer : layers) {
-			found = false;
-			for (vk::LayerProperties supportedLayer : supportedLayers) {
-				if (strcmp(supportedLayer.layerName, layer) == 0) {
-					found = true;
-					std::cout << "Layer \"" << layer << "\" is supported\n";
-				}
-			}
-			if (!found) {
-#if DEBUG_VULKAN
-					std::cout << "Layer \"" << layer << "\" is not supported\n";
-#endif				
-					return false;
-			}
-		}
-
-
-		return true;
-	}
-
-
-	bool static PhyDeviceSupported(
-		const vk::PhysicalDevice& physicalDevice,
-		const char** ppRequestedExtensions,
-		const uint32_t requestedExtensionCount) {
-
-		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
-		logger->print("The requested Physical Device Extensions");
-		logger->print_list(ppRequestedExtensions, requestedExtensionCount);
-
-		std::vector<vk::ExtensionProperties> extensions = physicalDevice.enumerateDeviceExtensionProperties();
-		logger->print("Physical Device Supported Extensions: ");
-		logger->print_extensions(extensions);
-
-		for (uint32_t i = 0; i < requestedExtensionCount; ++i) {
-			bool supported = false;
-
-			for (vk::ExtensionProperties& extension : extensions) {
-				char* name = extension.extensionName;
-				if (strcmp(name, ppRequestedExtensions[i]) == 0) {
-					supported = true;
-					break;
-				}
-			}
-			if (!supported) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	bool static IsPhyDeviceSuitable(const vk::PhysicalDevice& physicalDevice) {
-		Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
-
-		logger->print("Checking if device is suitable");
-
-		const char* ppRequestedExtension = VK_KHR_SWAPCHAIN_EXTENSION_NAME;
-
-		if (PhyDeviceSupported(physicalDevice, &ppRequestedExtension, 1)) {
-			logger->print("Device can support the requested extensions!");
-		}
-		else {
-			logger->print("Device can't support the requested extensions!");
-			return false;
-		}
-		return true;
-	}
 }
+	

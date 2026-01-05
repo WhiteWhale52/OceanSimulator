@@ -61,11 +61,21 @@ namespace Core::Logging {
 
 		static Logger* get_logger();
 
-		void set_mode(bool mode);
 
-		bool is_enabled();
-
-		void print(std::string message);
+		void print();
+		
+		
+		template<typename T, typename... Args>
+		void print(T first, Args... args) {
+			std::cout << first;
+			if constexpr (sizeof...(args) > 0) {
+				std::cout << " ";
+				print(args...);
+			}
+			else {
+				std::cout << std::endl;
+			}
+		}
 
 		void report_version_number(uint32_t version);
 
@@ -82,5 +92,6 @@ namespace Core::Logging {
 
 		bool enabled;
 	};
+	
 }
 

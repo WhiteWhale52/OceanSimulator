@@ -2,6 +2,8 @@
 
 #include "VulkanContext.h"
 #include "Config/AppConfig.h"
+#include "Logging/Logger.h"
+
 
 namespace Core::Vulkan {
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig);
@@ -18,5 +20,5 @@ namespace Core::Vulkan {
 	
 	
 	bool static IsPhyDeviceSuitable(const vk::PhysicalDevice& physicalDevice);
-
+	Logging::Logger* logger = Core::Logging::Logger::get_logger();
 }

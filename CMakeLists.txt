@@ -8,6 +8,7 @@ set(Vulkan_ROOT "$ENV{VULKAN_SDK}")
 # ---- Find Packages ----
 find_package(Vulkan REQUIRED COMPONENTS glslang)
 
+
 message ("Found GLSlang at: " "$ENV{VULKAN_SDK}/Include/glslang/Include")
 
 # ---- Find GLFW3 on System ----
