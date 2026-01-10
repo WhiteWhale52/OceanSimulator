@@ -15,6 +15,9 @@ namespace Core::Vulkan {
 	void CreateDeviceAndQueues(VulkanContext& context);
 
 	void CreateCommandPools(VulkanContext& context);
+	void AllocateCmdBufferCompute(const VulkanContext& context);
+	void AllocateCmdBufferGraphics(const VulkanContext& context);
+
 
 	void Destroy(VulkanContext& context);
 	

@@ -219,7 +219,32 @@ namespace Core::Vulkan {
 	
 	void CreateCommandPools(VulkanContext& context)
 	{
+		{
+			vk::CommandPoolCreateInfo commandPoolCI = {};
+			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+			commandPoolCI.queueFamilyIndex = context.computeQueueFamily;
+			context.computeCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
+			context.logicalDevice.setDebugUtilsObjectNameEXT({
+				vk::ObjectType::eCommandPool,
+				(uint64_t)(VkCommandPool)context.computeCmdPool,
+				"Compute Command Pool"
+				});
+		}
+		{
+			vk::CommandPoolCreateInfo commandPoolCI = {};
+			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+			commandPoolCI.queueFamilyIndex = context.graphicsQueueFamily;
+			context.graphicsCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
+			context.logicalDevice.setDebugUtilsObjectNameEXT({
+				vk::ObjectType::eCommandPool,
+				(uint64_t)(VkCommandPool)context.graphicsCmdPool,
+				"Graphics Command Pool"
+				});
+		}
+		
 	}
+
+
 
 
 
@@ -278,6 +303,7 @@ namespace Core::Vulkan {
 
 		return true;
 	}
+
 
 
 	
