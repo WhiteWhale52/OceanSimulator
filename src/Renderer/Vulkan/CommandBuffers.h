@@ -1,13 +1,16 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include <Core/Vulkan/VulkanContext.h>
-#include <Cor>
- 
+#include <Vulkan/VulkanContext.h> 
 
-namespace Renderer::CommandBuffers {
-	class CommandBuffer {
+namespace Renderer::Vulkan {
+	class CommandBuffers {
 	public:
-		CommandBuffer(Core::Vulkan::VulkanContext& context);
+		CommandBuffers(Core::Vulkan::VulkanContext& context);
+	
+		vk::CommandBuffer AllocateGraphicsCmdBuffer();
+		vk::CommandBuffer AllocateComputeCmdBuffer();
+	private:
+		Core::Vulkan::VulkanContext& m_context;
 	};
 }
