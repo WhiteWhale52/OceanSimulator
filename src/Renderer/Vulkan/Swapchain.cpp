@@ -54,18 +54,25 @@ namespace Renderer::Vulkan
         t_swapChain.swapChainImageViews.resize(t_swapChain.swapChainImages.size());
 
         for (size_t i = 0; i < t_swapChain.swapChainImages.size(); i++) {
-            vk::ImageViewCreateInfo view{};
-            view.image = t_swapChain.swapChainImages[i];
-            view.viewType = vk::ImageViewType::e2D;
-            view.format = t_swapChain.swapChainImageFormat;
+            vk::ImageViewCreateInfo viewCreateInfo{};
+            viewCreateInfo.image = t_swapChain.swapChainImages[i];
+            viewCreateInfo.viewType = vk::ImageViewType::e2D;
+            viewCreateInfo.format = t_swapChain.swapChainImageFormat;
 
-            view.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-            view.subresourceRange.baseMipLevel = 0;
-            view.subresourceRange.levelCount = 1;
-            view.subresourceRange.baseArrayLayer = 0;
-            view.subresourceRange.layerCount = 1;
+            viewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+            viewCreateInfo.subresourceRange.baseMipLevel = 0;
+            viewCreateInfo.subresourceRange.levelCount = 1;
+            viewCreateInfo.subresourceRange.baseArrayLayer = 0;
+            viewCreateInfo.subresourceRange.layerCount = 1;
+            viewCreateInfo.components.r = vk::ComponentSwizzle::eIdentity;
+            viewCreateInfo.components.g = vk::ComponentSwizzle::eIdentity;
+            viewCreateInfo.components.b = vk::ComponentSwizzle::eIdentity;
+            viewCreateInfo.components.a = vk::ComponentSwizzle::eIdentity;
 
-            context.logicalDevice.createImageView(&view, nullptr, &t_swapChain.swapChainImageViews[i]);
+            if (context.logicalDevice.createImageView(&viewCreateInfo, nullptr, &t_swapChain.swapChainImageViews[i]) != vk::Result::eSuccess) {
+                Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
+                logger->print("Failed to create image view");
+            }
         }
     }
 
