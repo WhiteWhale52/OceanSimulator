@@ -50,6 +50,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Prepare Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.1
+      with:
+       vulkan-query-version: 1.4.304.1
+       vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+       vulkan-use-cache: true
     
     - name: Install Ninja
       run: sudo apt-get install ninja-build
@@ -58,78 +64,41 @@ jobs:
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Install VulkanSDK (MacOS)
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        version="1.4.321.0"
-        mkdir -p "$HOME/VulkanSDK/$version"
-        curl -L -o vulkansdk-macos-$VULKAN_VERSION.zip https://sdk.lunarg.com/sdk/download/$version/mac/vulkansdk-macos-$version.zip
-        INSTALL_DIR="$HOME/VulkanSDK/$VULKAN_VERSION"
-        mkdir -p "$INSTALL_DIR"
-        unzip vulkansdk-macos-$VULKAN_VERSION.zip -d "$INSTALL_DIR"
-        cd "$INSTALL_DIR"
-        export VULKAN_SDK="$HOME/VulkanSDK/$version"
-        export PATH="$VULKAN_SDK/bin:$PATH"
-        sudo ./vulkansdk-macOS-1.4.321.0.app/Contents/MacOS/vulkansdk-macOS-1.4.321.0 
-        \ --root "installation path" 
-        \ --accept-licenses --default-answer
-        \ --confirm-command install
 
-    - name: Install VulkanSDK (Ubuntu)
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        sudo apt update
-        sudo apt install xz-utils
-        sudo apt-get install libglm-dev cmake libxcb-dri3-0 libxcb-present0 libpciaccess0 \
-        libpng-dev libxcb-keysyms1-dev libxcb-dri3-dev libx11-dev g++ gcc \
-        libwayland-dev libxrandr-dev libxcb-randr0-dev libxcb-ewmh-dev \
-        git python-is-python3 bison libx11-xcb-dev liblz4-dev libzstd-dev \
-        ocaml-core ninja-build pkg-config libxml2-dev wayland-protocols python3-jsonschema \
-        clang-format qtbase5-dev qt6-base-dev
-        wget -qO- https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo tee /etc/apt/trusted.gpg.d/lunarg.asc
-        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.4.313-jammy.list https://packages.lunarg.com/vulkan/1.4.313/lunarg-vulkan-1.4.313-jammy.list
-        sudo apt update
-        sudo apt install vulkan-sdk
-
-    - name: Download VulkanSDK (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        $version="1.4.321.1"
-        Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/vulkansdk-windows-X64-$version.exe" -OutFile "VulkanSDK.exe"
-        vulkansdk-windows-X64-1.4.321.1.exe --accept-licenses --default-answer --confirm-command install
-        $env:VULKAN_SDK="C:\VulkanSDK\$version"
-        $env:PATH="$env:VULKAN_SDK\Bin;$env:PATH"
-        
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.16.x'
+    - name: Use cmake
+      run: cmake --version
       
-    - name: Install CMake (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: choco install cmake 
+    # - name: Install CMake (Windows)
+    #   if: runner.os == 'Windows'
+    #   shell: pwsh
+    #   run: choco install cmake 
 
-    - name: Install CMake (Ubuntu)
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        sudo apt-get update
-        sudo apt-get remove --purge -y cmake
-        sudo apt-get install -y wget gnupg software-properties-common apt-transport-https
-        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
-          | sudo gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg
-        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
-          | sudo tee /etc/apt/sources.list.d/kitware.list
-        sudo apt-get update
-        wget https://cmake.org/files/v4.0/cmake-4.0.3-linux-x86_64.sh
-        sudo sh cmake-4.0.3-linux-x86_64.sh --skip-license --prefix=/usr/local
-        cmake --version
+    # - name: Install CMake (Ubuntu)
+    #   if: runner.os == 'Linux'
+    #   shell: bash
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt-get remove --purge -y cmake
+    #     sudo apt-get install -y wget gnupg software-properties-common apt-transport-https
+    #     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
+    #       | sudo gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg
+    #     echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
+    #       | sudo tee /etc/apt/sources.list.d/kitware.list
+    #     sudo apt-get update
+    #     wget https://cmake.org/files/v4.0/cmake-4.0.3-linux-x86_64.sh
+    #     sudo sh cmake-4.0.3-linux-x86_64.sh --skip-license --prefix=/usr/local
+    #     cmake --version
 
-    - name: Install CMake (macOS)
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        brew update
-        brew install cmake@4
+    # - name: Install CMake (macOS)
+    #   if: runner.os == 'macOS'
+    #   shell: bash
+    #   run: |
+    #     brew update
+    #     brew install cmake@4
     
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
