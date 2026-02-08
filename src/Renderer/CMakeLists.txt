@@ -25,7 +25,19 @@ target_compile_definitions(VkFFT
 target_sources(Renderer PRIVATE
 "Renderer.cpp"
 "FFT/VkFFTSystem.cpp"
- "Renderer.h" "FrameResources.h" "Vulkan/CommandBuffers.cpp" "Vulkan/Pipelines.cpp" "Vulkan/Descriptors.cpp" "Vulkan/Descriptors.h" "Vulkan/CommandBuffers.h" "Vulkan/Pipelines.h" "Vulkan/Swapchain.h" "Vulkan/Swapchain.cpp")
+ "Renderer.h" 
+ "FrameResources.h"
+ "Vulkan/CommandBuffers.cpp"
+ "Vulkan/Pipelines.cpp"
+ "Vulkan/Descriptors.cpp" 
+ "Vulkan/Descriptors.h" 
+ "Vulkan/CommandBuffers.h"
+ "Vulkan/Pipelines.h"
+ "Vulkan/Swapchain.h" 
+ "Vulkan/Swapchain.cpp"
+ "Vulkan/SwapchainResources.cpp"
+ "Vulkan/SwapchainResources.h"
+)
 
 target_link_libraries(Renderer PUBLIC
     Core
