@@ -16,5 +16,7 @@ namespace Core::Vulkan {
 
 		vk::CommandPool graphicsCmdPool = VK_NULL_HANDLE;
 		vk::CommandPool computeCmdPool = VK_NULL_HANDLE;
+
+		vk::SurfaceKHR surface = VK_NULL_HANDLE;
 	};
 }
