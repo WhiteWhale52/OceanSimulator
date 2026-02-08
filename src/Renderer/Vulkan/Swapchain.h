@@ -1,36 +1,37 @@
 #pragma once
-#include <vulkan/vulkan.hpp>
 #include <Vulkan/VulkanContext.h> 
 
-class Swapchain {
-public:
-    Swapchain();
-    ~Swapchain();
+namespace Renderer::Vulkan
+{
 
-    void Initialize(const Core::Vulkan::VulkanContext& context, vk::SurfaceKHR surface, GLFWwindow* window);
-    void Cleanup();
-    void Recreate(GLFWwindow* window);
+    struct Swapchains {
 
-    vk::SwapchainKHR getSwapChain() const { return swapChain; }
-    const std::vector<vk::Image>& getImages() const { return swapChainImages; }
-    vk::Format getImageFormat() const { return swapChainImageFormat; }
-    vk::Extent2D getExtent() const { return swapChainExtent; }
-    const std::vector<VkImageView>& getImageViews() const { return swapChainImageViews; }
 
-private:
-    vk::SurfaceKHR surface = VK_NULL_HANDLE;
+        vk::SwapchainKHR swapChainInstance = VK_NULL_HANDLE;
+        vk::Extent2D swapChainExtent;
+        vk::SurfaceKHR surface = VK_NULL_HANDLE;
+        std::vector<vk::ImageView> swapChainImageViews;
+        std::vector<vk::Image> swapChainImages;
+        vk::Format swapChainImageFormat;
 
-    vk::SwapchainKHR swapChain = VK_NULL_HANDLE;
-    std::vector<vk::Image> swapChainImages;
-    vk::Format swapChainImageFormat;
-    vk::Extent2D swapChainExtent;
-    std::vector<VkImageView> swapChainImageViews;
 
-    void CreateSwapChain(GLFWwindow* window);
-    void CreateImageViews();
-    void CleanupSwapChain();
+        Swapchains CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, uint32_t width, uint32_t height);
+        void Cleanup();
+        void Recreate(GLFWwindow* window);
 
-    vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-    vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, GLFWwindow* window);
-};
+        vk::SwapchainKHR GetSwapChain() const { return swapChainInstance; }
+        const std::vector<vk::Image>& GetImages() const { return swapChainImages; }
+        vk::Format GetImageFormat() const { return swapChainImageFormat; }
+        vk::Extent2D GetExtent() const { return swapChainExtent; }
+        const std::vector<vk::ImageView>& GetImageViews() const { return swapChainImageViews; }
+
+
+
+        void CreateImageViews(Core::Vulkan::VulkanContext& context, Swapchains& swapchain);
+        void CleanupSwapChain();
+
+        vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+        vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
+        vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, GLFWwindow* window);
+    };
+}
