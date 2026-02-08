@@ -11,8 +11,15 @@ find_package(Vulkan REQUIRED COMPONENTS glslang)
 
 message ("Found GLSlang at: " "$ENV{VULKAN_SDK}/Include/glslang/Include")
 
-# ---- Find GLFW3 on System ----
-find_package(glfw3 REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+  glfw
+  GIT_REPOSITORY https://github.com/glfw/glfw.git
+  GIT_TAG 3.4
+)
+
+FetchContent_MakeAvailable(glfw)
 
 
 add_subdirectory("src/Core")
