@@ -54,7 +54,7 @@ jobs:
       uses: humbletim/setup-vulkan-sdk@v1.2.1
       with:
        vulkan-query-version: 1.4.304.1
-       vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+       vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Headers, SPIRV-Tools, SPIRV-Cross, Glslang
        vulkan-use-cache: true
     
     - name: Install Ninja
@@ -68,7 +68,7 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v2
       with:
-        cmake-version: '3.16.x'
+        cmake-version: '3.31.x'
     - name: Use cmake
       run: cmake --version
       
