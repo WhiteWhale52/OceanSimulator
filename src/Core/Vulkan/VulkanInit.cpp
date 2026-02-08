@@ -294,7 +294,7 @@ namespace Core::Vulkan {
 			}
 			if (!found) {
 #if DEBUG_VULKAN
-					std::cout << "Instance Layer \"" << layer << "\" is not supported\n";
+					std::cout << "Instance Layer  \"" << layer << "\" is not supported\n";
 #endif				
 					return false;
 			}
@@ -304,10 +304,19 @@ namespace Core::Vulkan {
 		return true;
 	}
 
-
-
 	
 	
+	void CreateSurface(VulkanContext& context, GLFWwindow* window)
+	{
+		VkSurfaceKHR oldSurface = VK_NULL_HANDLE;
+		if (glfwCreateWindowSurface(context.instance, window, nullptr, &oldSurface) != VK_SUCCESS) {
+			Logging::Logger* logger = Core::Logging::Logger::get_logger();
+			logger->print("Failed to create window surface");
+			return;
+		}
+		context.surface = static_cast<VkSurfaceKHR>(oldSurface);
+	}
+
 	void Destroy(VulkanContext& context)
 	{
 		if (context.logicalDevice) {
