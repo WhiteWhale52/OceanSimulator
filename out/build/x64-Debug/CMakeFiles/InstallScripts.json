@@ -1,7 +1,14 @@
 {
 	"InstallScripts" : 
 	[
-		"C:/Users/moham/Documents/GitHub/Fluid_Simulator/out/build/x64-Debug/cmake_install.cmake"
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/_deps/glfw-build/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/_deps/glfw-build/src/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/_deps/glfw-build/docs/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Core/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Renderer/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Engine/cmake_install.cmake",
+		"C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Application/cmake_install.cmake"
 	],
 	"Parallel" : false
 }
