@@ -34,6 +34,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/_deps/glfw-build/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug/src/Core/cmake_install.cmake")
 endif()
 
