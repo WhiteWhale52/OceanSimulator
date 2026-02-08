@@ -1,5 +1,6 @@
 #pragma once
 #include <Vulkan/VulkanContext.h> 
+#include <Logging/Logger.h>
 
 namespace Renderer::Vulkan
 {
