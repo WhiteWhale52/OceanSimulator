@@ -249,7 +249,7 @@ namespace Core::Vulkan {
 
 
 
-	static bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
+	 bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
 		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
