@@ -32,9 +32,7 @@ namespace Core::Logging {
 			debugCallback,
 			nullptr
 		);
-		auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-		createFunc(instance, createInfo, nullptr, &messenger);
-		return messenger;
+		return instance.createDebugUtilsMessengerEXT(createInfo);
 	}
 
 
