@@ -44,6 +44,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Install Linux Dependencies
       if: runner.os == 'Linux'
@@ -58,7 +60,9 @@ jobs:
           libxrandr-dev \
           libxinerama-dev \
           libxcursor-dev \
-          libxi-dev
+          libxi-dev \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev
 
     - name: Prepare Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.1
