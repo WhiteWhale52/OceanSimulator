@@ -24,7 +24,7 @@ namespace Core::Logging {
 		return VK_FALSE;
 	}
 
-	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
+	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance) {
 		vk::DebugUtilsMessengerCreateInfoEXT createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
 			vk::DebugUtilsMessengerCreateFlagsEXT(),
 			vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
