@@ -20,7 +20,7 @@ link_directories("$ENV{VULKAN_SDK}/Lib")
 
 # ---- Include VulkanMemoryAllocator ----
 add_library(VulkanMemoryAllocator INTERFACE)
-target_include_directories(VulkanMemoryAllocator INTERFACE "${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/Include")
+target_include_directories(VulkanMemoryAllocator INTERFACE "${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include")
 
 target_link_libraries(VulkanMemoryAllocator
     INTERFACE
@@ -36,7 +36,7 @@ file(GLOB IMGUI_SOURCES    ${CMAKE_SOURCE_DIR}/external/imgui/*.cpp)
 target_include_directories(Core
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/Include
+        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include
         ${Vulkan_INCLUDE_DIRS}
 )
 
