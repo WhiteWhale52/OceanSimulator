@@ -44,13 +44,13 @@ namespace Engine {
 
 		vk::Instance instance{ nullptr };
 
-		VkDebugUtilsMessengerEXT debugMessenger{ nullptr };
+		vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
 
 
 		void build_glfw_window();
 
 
-		void make_instance();
+//		void make_instance();
 
 		void make_debug_messenger();
 

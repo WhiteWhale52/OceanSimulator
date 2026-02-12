@@ -42,16 +42,16 @@ namespace Core::Logging {
 
 	VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageSeverityFlagsEXT messageType,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData
 	);
 
 
-	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance,  VkDebugUtilsMessengerEXT& messenger);
+	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance);
 	
 	
-	vk::Result destroy_debug_messenger(vk::Instance& instance,  VkDebugUtilsMessengerEXT& messenger);
+	void destroy_debug_messenger(vk::Instance& instance,  vk::DebugUtilsMessengerEXT& messenger);
 
 
 	

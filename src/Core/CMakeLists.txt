@@ -36,8 +36,10 @@ file(GLOB IMGUI_SOURCES    ${CMAKE_SOURCE_DIR}/external/imgui/*.cpp)
 target_include_directories(Core
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include
         ${Vulkan_INCLUDE_DIRS}
+)
+target_include_directories(Core SYSTEM PRIVATE 
+        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include
 )
 
 target_sources(Core

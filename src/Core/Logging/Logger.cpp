@@ -5,7 +5,7 @@ namespace Core::Logging {
 
 	VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageSeverityFlagsEXT messageType,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData
 	) {
@@ -25,22 +25,26 @@ namespace Core::Logging {
 	}
 
 	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance) {
-		vk::DebugUtilsMessengerCreateInfoEXT createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
-			vk::DebugUtilsMessengerCreateFlagsEXT(),
-			vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
-			vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-			debugCallback,
-			nullptr
-		);
+		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
+		createInfo.messageSeverity =
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+
+		createInfo.messageType =
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+			vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
+
+		createInfo.pfnUserCallback =
+			vk::PFN_DebugUtilsMessengerCallbackEXT(debugCallback);
+
 		return instance.createDebugUtilsMessengerEXT(createInfo);
 	}
 
 
-	vk::Result destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
-		auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-		destroyFunc(instance, messenger, nullptr);
-		return static_cast<vk::Result>(VK_SUCCESS);
-
+	void destroy_debug_messenger(vk::Instance& instance, vk::DebugUtilsMessengerEXT& messenger) {
+		 instance.destroyDebugUtilsMessengerEXT(messenger);
+		 return;
 	}
 
 
