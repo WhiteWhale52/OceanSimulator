@@ -3,6 +3,7 @@
 
 namespace Core::Vulkan {
 
+	 PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_Func = nullptr;
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
