@@ -46,7 +46,7 @@ namespace Core::Logging {
 	}
 
 
-	void destroy_debug_messenger(vk::Instance& instance, vk::DebugUtilsMessengerEXT& messenger) {
+	void destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
 		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 		vkDestroyDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
 			static_cast<VkDebugUtilsMessengerEXT>(messenger),nullptr);
