@@ -3,6 +3,7 @@
 
 namespace Core::Vulkan {
 
+	 PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT_Func = nullptr;
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
@@ -90,6 +91,9 @@ namespace Core::Vulkan {
 			logger->print("Failed to create the instance");
 #endif
 		}
+		vkSetDebugUtilsObjectNameEXT_Func = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(
+			context.instance.getProcAddr("vkSetDebugUtilsObjectNameEXT")
+			);
 	}
 
 
@@ -224,22 +228,26 @@ namespace Core::Vulkan {
 			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
 			commandPoolCI.queueFamilyIndex = context.computeQueueFamily;
 			context.computeCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
-			context.logicalDevice.setDebugUtilsObjectNameEXT({
+			vk::DebugUtilsObjectNameInfoEXT objectNameInfo{
 				vk::ObjectType::eCommandPool,
 				(uint64_t)(VkCommandPool)context.computeCmdPool,
 				"Compute Command Pool"
-				});
+			};
+			vkSetDebugUtilsObjectNameEXT_Func(static_cast<VkDevice>(context.logicalDevice),
+				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		{
 			vk::CommandPoolCreateInfo commandPoolCI = {};
 			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
 			commandPoolCI.queueFamilyIndex = context.graphicsQueueFamily;
 			context.graphicsCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
-			context.logicalDevice.setDebugUtilsObjectNameEXT({
+			vk::DebugUtilsObjectNameInfoEXT objectNameInfo{
 				vk::ObjectType::eCommandPool,
 				(uint64_t)(VkCommandPool)context.graphicsCmdPool,
 				"Graphics Command Pool"
-				});
+			};
+			vkSetDebugUtilsObjectNameEXT_Func(static_cast<VkDevice>(context.logicalDevice),
+				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		
 	}
@@ -249,7 +257,7 @@ namespace Core::Vulkan {
 
 
 
-	bool static InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
+	 bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
 		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();

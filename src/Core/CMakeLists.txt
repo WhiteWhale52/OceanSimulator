@@ -1,8 +1,6 @@
 add_library(Core STATIC)
 
 
-
-
 # ---- Including Vulkan ----
 if (Vulkan_FOUND)
     message(STATUS "Vulkan found at: ${Vulkan_INCLUDE_DIRS}")
@@ -11,8 +9,10 @@ if (Vulkan_FOUND)
 else()
     message(FATAL_ERROR "Vulkan SDK not found! Please set VULKAN_SDK environment variable.")
 endif()
+
 target_include_directories(Core PUBLIC "$ENV{VULKAN_SDK}/Include")
 # ---- Add Vulkan Library Path ----
+
 link_directories("$ENV{VULKAN_SDK}/Lib")
 
 
@@ -20,24 +20,31 @@ link_directories("$ENV{VULKAN_SDK}/Lib")
 
 # ---- Include VulkanMemoryAllocator ----
 add_library(VulkanMemoryAllocator INTERFACE)
-target_include_directories(VulkanMemoryAllocator INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/external/VulkanMemoryAllocator/Include")
+target_include_directories(VulkanMemoryAllocator INTERFACE "${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include")
+
+target_link_libraries(VulkanMemoryAllocator
+    INTERFACE
+        Vulkan::Vulkan
+)
 
 
 # Add ImGui (you can add its .cpp files directly)
-file(GLOB IMGUI_SOURCES external/imgui/*.cpp)
+file(GLOB IMGUI_SOURCES    ${CMAKE_SOURCE_DIR}/external/imgui/*.cpp)
 
 # Include the directories
 
 target_include_directories(Core
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/Include
         ${Vulkan_INCLUDE_DIRS}
+)
+target_include_directories(Core SYSTEM PRIVATE 
+        ${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include
 )
 
 target_sources(Core
     PRIVATE
-       
+           ${IMGUI_SOURCES}
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
 

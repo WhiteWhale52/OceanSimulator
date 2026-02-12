@@ -5,7 +5,7 @@ namespace Core::Logging {
 
 	VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-		VkDebugUtilsMessageSeverityFlagsEXT messageType,
+		VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData
 	) {
@@ -24,25 +24,32 @@ namespace Core::Logging {
 		return VK_FALSE;
 	}
 
-	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
-		vk::DebugUtilsMessengerCreateInfoEXT createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
-			vk::DebugUtilsMessengerCreateFlagsEXT(),
-			vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
-			vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-			debugCallback,
-			nullptr
-		);
-		auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-		createFunc(instance, createInfo, nullptr, &messenger);
-		return messenger;
+	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
+		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
+		createInfo.messageSeverity =
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+			vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+
+		createInfo.messageType =
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+			vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+			vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
+
+		createInfo.pfnUserCallback =
+			vk::PFN_DebugUtilsMessengerCallbackEXT(debugCallback);
+		
+		auto vkCreateDebugUtilsMessengerEXT = 
+			(PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		vkCreateDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
+			reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(&createInfo),
+			nullptr, &messenger);
 	}
 
 
-	vk::Result destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
-		auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-		destroyFunc(instance, messenger, nullptr);
-		return static_cast<vk::Result>(VK_SUCCESS);
-
+	void destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
+		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		vkDestroyDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
+			static_cast<VkDebugUtilsMessengerEXT>(messenger),nullptr);
 	}
 
 

@@ -10,8 +10,11 @@ namespace Renderer::Vulkan
     {
         Swapchains t_swapChain{};
 
-        vk::SurfaceCapabilitiesKHR caps;
-        context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface, &caps);
+       
+        
+        vk::Result result;
+        
+        vk::SurfaceCapabilitiesKHR caps = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
 
         t_swapChain.swapChainExtent = vk::Extent2D{ width, height };
 
@@ -29,12 +32,11 @@ namespace Renderer::Vulkan
         info.presentMode = vk::PresentModeKHR::eFifo;
         info.clipped = VK_TRUE;
 
-        context.logicalDevice.createSwapchainKHR(&info, nullptr, &t_swapChain.swapChainInstance);
+        t_swapChain.swapChainInstance = context.logicalDevice.createSwapchainKHR(info);
+        
 
-        uint32_t count;
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &count, nullptr);
-        t_swapChain.swapChainImages.resize(count);
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &count, t_swapChain.swapChainImages.data());
+        t_swapChain.swapChainImages = context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance);
+
 
         t_swapChain.swapChainImageFormat = info.imageFormat;
         return t_swapChain;
