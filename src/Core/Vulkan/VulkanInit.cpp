@@ -90,7 +90,7 @@ namespace Core::Vulkan {
 			logger->print("Failed to create the instance");
 #endif
 		}
-		vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(
+		vkSetDebugUtilsObjectNameEXT_Func = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(
 			context.instance.getProcAddr("vkSetDebugUtilsObjectNameEXT")
 			);
 	}
@@ -232,7 +232,7 @@ namespace Core::Vulkan {
 				(uint64_t)(VkCommandPool)context.computeCmdPool,
 				"Compute Command Pool"
 			};
-			vkSetDebugUtilsObjectNameEXT(static_cast<VkDevice>(context.logicalDevice),
+			vkSetDebugUtilsObjectNameEXT_Func(static_cast<VkDevice>(context.logicalDevice),
 				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		{
@@ -245,7 +245,7 @@ namespace Core::Vulkan {
 				(uint64_t)(VkCommandPool)context.graphicsCmdPool,
 				"Graphics Command Pool"
 			};
-			vkSetDebugUtilsObjectNameEXT(static_cast<VkDevice>(context.logicalDevice),
+			vkSetDebugUtilsObjectNameEXT_Func(static_cast<VkDevice>(context.logicalDevice),
 				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		

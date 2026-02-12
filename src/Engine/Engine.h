@@ -44,7 +44,7 @@ namespace Engine {
 
 		vk::Instance instance{ nullptr };
 
-		vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
+		VkDebugUtilsMessengerEXT debugMessenger{ nullptr };
 
 
 		void build_glfw_window();

@@ -40,7 +40,7 @@ namespace Engine {
 		if (!debugMode) {
 			return;
 		}
-		debugMessenger = Core::Logging::make_debug_messenger(instance);
+		Core::Logging::make_debug_messenger(instance, debugMessenger);
 	}
 
 	Engine::~Engine() {
