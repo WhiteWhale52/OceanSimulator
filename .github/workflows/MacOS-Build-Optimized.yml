@@ -1,4 +1,4 @@
-name: CMake on multiple platforms
+name: MacOS Build Optimized
 
 on:
   push:
@@ -28,6 +28,13 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Setup ccache (Linux/macOS)
+      if: runner.os != 'Windows'
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ matrix.cpp_compiler }}-${{ matrix.build_type }}
+        max-size: 500M
+
     - name: Prepare Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.1
       with:
@@ -52,14 +59,14 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-    - name: Configure CMake with Ninja
+    - name: Configure CMake (Ninja)
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -G Ninja
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
+          cmake -S .
+          -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --parallel
     
