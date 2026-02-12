@@ -48,10 +48,10 @@ namespace Core::Logging {
 	);
 
 
-	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance);
+	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
+
 	
-	
-	void destroy_debug_messenger(vk::Instance& instance,  vk::DebugUtilsMessengerEXT& messenger);
+	void destroy_debug_messenger(vk::Instance& instance, vk::DebugUtilsMessengerEXT& messenger);
 
 
 	
