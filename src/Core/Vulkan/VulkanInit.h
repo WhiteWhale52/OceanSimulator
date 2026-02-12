@@ -22,5 +22,5 @@ namespace Core::Vulkan {
 
 	void Destroy(VulkanContext& context);
 	
-	
+	PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT = nullptr;
 }

@@ -24,7 +24,7 @@ namespace Core::Logging {
 		return VK_FALSE;
 	}
 
-	vk::DebugUtilsMessengerEXT make_debug_messenger(vk::Instance& instance) {
+	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
 		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
 		createInfo.messageSeverity =
 			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
@@ -37,14 +37,19 @@ namespace Core::Logging {
 
 		createInfo.pfnUserCallback =
 			vk::PFN_DebugUtilsMessengerCallbackEXT(debugCallback);
-
-		return instance.createDebugUtilsMessengerEXT(createInfo);
+		
+		auto vkCreateDebugUtilsMessengerEXT = 
+			(PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		vkCreateDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
+			reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(&createInfo),
+			nullptr, &messenger);
 	}
 
 
 	void destroy_debug_messenger(vk::Instance& instance, vk::DebugUtilsMessengerEXT& messenger) {
-		 instance.destroyDebugUtilsMessengerEXT(messenger);
-		 return;
+		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		vkDestroyDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
+			static_cast<VkDebugUtilsMessengerEXT>(messenger),nullptr);
 	}
 
 

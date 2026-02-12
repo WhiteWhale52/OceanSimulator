@@ -90,6 +90,9 @@ namespace Core::Vulkan {
 			logger->print("Failed to create the instance");
 #endif
 		}
+		vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(
+			context.instance.getProcAddr("vkSetDebugUtilsObjectNameEXT")
+			);
 	}
 
 
@@ -224,22 +227,26 @@ namespace Core::Vulkan {
 			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
 			commandPoolCI.queueFamilyIndex = context.computeQueueFamily;
 			context.computeCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
-			context.logicalDevice.setDebugUtilsObjectNameEXT({
+			vk::DebugUtilsObjectNameInfoEXT objectNameInfo{
 				vk::ObjectType::eCommandPool,
 				(uint64_t)(VkCommandPool)context.computeCmdPool,
 				"Compute Command Pool"
-				});
+			};
+			vkSetDebugUtilsObjectNameEXT(static_cast<VkDevice>(context.logicalDevice),
+				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		{
 			vk::CommandPoolCreateInfo commandPoolCI = {};
 			commandPoolCI.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
 			commandPoolCI.queueFamilyIndex = context.graphicsQueueFamily;
 			context.graphicsCmdPool = context.logicalDevice.createCommandPool(commandPoolCI);
-			context.logicalDevice.setDebugUtilsObjectNameEXT({
+			vk::DebugUtilsObjectNameInfoEXT objectNameInfo{
 				vk::ObjectType::eCommandPool,
 				(uint64_t)(VkCommandPool)context.graphicsCmdPool,
 				"Graphics Command Pool"
-				});
+			};
+			vkSetDebugUtilsObjectNameEXT(static_cast<VkDevice>(context.logicalDevice),
+				reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&objectNameInfo));
 		}
 		
 	}
