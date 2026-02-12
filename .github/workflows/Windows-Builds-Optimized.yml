@@ -1,8 +1,7 @@
 name: Building on Windows with Caching
 
 on:
-  push:
-    branches: [ "main" ]
+  
   pull_request:
     branches: [ "main" ]
 
