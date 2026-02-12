@@ -5,6 +5,7 @@ This project implements a real-time, FFT-driven water simulation system capable 
 Instead of solving full 3D Navier–Stokes equations, the simulation represents the ocean surface as a heightfield derived from a wave energy spectrum in the frequency domain. The surface is updated each frame using Fast Fourier Transforms (FFTs), allowing thousands of interacting waves to evolve seamlessly and in real time.
 
 
+[![CMake on multiple platforms](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=WhiteWhale52-patch-1)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/cmake-multi-platform.yml)
 
 #  Motivations
 
