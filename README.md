@@ -5,8 +5,9 @@ This project implements a real-time, FFT-driven water simulation system capable 
 Instead of solving full 3D Navier–Stokes equations, the simulation represents the ocean surface as a heightfield derived from a wave energy spectrum in the frequency domain. The surface is updated each frame using Fast Fourier Transforms (FFTs), allowing thousands of interacting waves to evolve seamlessly and in real time.
 
 
-[![Builds on Linux (Ubuntu)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Linux-Build.yml/badge.svg?branch=main)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Linux-Build.yml)
-[![Building on Windows with Caching](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Windows-Builds-Optimized.yml/badge.svg?branch=main)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Windows-Builds-Optimized.yml)
+[![Builds on Linux (Ubuntu)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Linux-Build.yml/badge.svg?branch=main)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Linux-Build.yml)    
+[![Building on Windows with Caching](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Windows-Builds-Optimized.yml/badge.svg?branch=main)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/Windows-Builds-Optimized.yml)  
+[![MacOS Build Optimized](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/MacOS-Build-Optimized.yml/badge.svg)](https://github.com/WhiteWhale52/OceanSimulator/actions/workflows/MacOS-Build-Optimized.yml)
 #  Motivations
 
 ### Why does this project matter to me?
