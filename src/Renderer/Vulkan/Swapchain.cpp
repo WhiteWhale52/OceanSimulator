@@ -2,64 +2,162 @@
 
 
 
-
-
 namespace Renderer::Vulkan
 {
-    Swapchains Swapchains::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, uint32_t width, uint32_t height)
+    vk::SurfaceFormatKHR Swapchain::ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats)
     {
-        Swapchains t_swapChain{};
+        for (const auto& format : availableFormats) {
+            if (format.format == vk::Format::eB8G8R8A8Srgb && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+                return format;
 
-       
-        
-        vk::Result result;
-        
-        vk::SurfaceCapabilitiesKHR caps = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
+            }
+        }
+        return availableFormats[0];
+    }
 
-        t_swapChain.swapChainExtent = vk::Extent2D{ width, height };
+    vk::PresentModeKHR Swapchain::ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes)
+    {
+        for (const auto& mode : availablePresentModes) {
+            if (mode == vk::PresentModeKHR::eMailbox)
+                return mode;
+        }
+        return vk::PresentModeKHR::eFifo;
+    }
+
+    vk::Extent2D Swapchain::ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, GLFWwindow* window)
+    {
+        if (capabilities.currentExtent.width != UINT32_MAX)
+            return capabilities.currentExtent;
+
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        return {
+            std::clamp((uint32_t)width, capabilities.minImageExtent.width,  capabilities.maxImageExtent.width),
+            std::clamp((uint32_t)height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+        };
+    }
+
+    Swapchain Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain)
+    {
+        Swapchain t_swapChain{};
+
+        vk::SurfaceCapabilitiesKHR capabilities = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
+
+        // Get surface formats (two-call pattern)
+        uint32_t formatCount = 0;
+        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, nullptr, nullptr);
+        std::vector<vk::SurfaceFormatKHR> surfaceFormats(formatCount);
+        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, surfaceFormats.data(), nullptr);
+
+        // Get present modes (two-call pattern)
+        uint32_t modeCount = 0;
+        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, nullptr, nullptr);
+        std::vector<vk::PresentModeKHR> surfaceModes(modeCount);
+        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, surfaceModes.data(), nullptr);
+
+        auto t_surfaceFormat = ChooseSwapSurfaceFormat(surfaceFormats);
+        t_swapChain.swapChainImageFormat = t_surfaceFormat.format;
+        t_swapChain.colorSpace = t_surfaceFormat.colorSpace;
+        t_swapChain.presentMode = ChooseSwapPresentMode(surfaceModes);
+        t_swapChain.extent = ChooseSwapExtent(capabilities, window);
 
         vk::SwapchainCreateInfoKHR info{};
         info.surface = context.surface;
-        info.minImageCount = caps.minImageCount + 1;
-        info.imageFormat = vk::Format::eB8G8R8A8Srgb;
-        info.imageColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
-        info.imageExtent = t_swapChain.swapChainExtent;
+        info.minImageCount = capabilities.minImageCount + 1;
+        info.imageFormat = t_swapChain.swapChainImageFormat;
+        info.imageColorSpace = t_swapChain.colorSpace;
+        info.imageExtent = t_swapChain.extent;
         info.imageArrayLayers = 1;
         info.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
         info.imageSharingMode = vk::SharingMode::eExclusive;
-        info.preTransform = caps.currentTransform;
+        info.preTransform = capabilities.currentTransform;
         info.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
-        info.presentMode = vk::PresentModeKHR::eFifo;
+        info.presentMode = t_swapChain.presentMode;
         info.clipped = VK_TRUE;
+        info.oldSwapchain = oldSwapChain;
 
         t_swapChain.swapChainInstance = context.logicalDevice.createSwapchainKHR(info);
-        
 
-        t_swapChain.swapChainImages = context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance);
+        // Get swapchain images (two-call pattern)
+        uint32_t swapchainImageCount = 0;
+        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount,
+            nullptr, nullptr);
+        t_swapChain.swapChainImages.resize(swapchainImageCount);
+        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount,
+            t_swapChain.swapChainImages.data(), nullptr);
 
+        CreateImageViews(context, t_swapChain);
 
-        t_swapChain.swapChainImageFormat = info.imageFormat;
+        // Depth image
+        vk::ImageCreateInfo depthInfo{};
+        depthInfo.imageType = vk::ImageType::e2D;
+        depthInfo.format = t_swapChain.depthFormat;
+        depthInfo.extent = vk::Extent3D{ t_swapChain.extent.width, t_swapChain.extent.height, 1 };
+        depthInfo.mipLevels = 1;
+        depthInfo.arrayLayers = 1;
+        depthInfo.samples = vk::SampleCountFlagBits::e1;
+        depthInfo.tiling = vk::ImageTiling::eOptimal;
+        depthInfo.usage = vk::ImageUsageFlagBits::eDepthStencilAttachment;
+
+        VmaAllocationCreateInfo depthAllocInfo{};
+        depthAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
+
+        if (vmaCreateImage(context.vmaAllocator, reinterpret_cast<const VkImageCreateInfo*>(&depthInfo), &depthAllocInfo,
+            reinterpret_cast<VkImage*>(&t_swapChain.depthImage), &t_swapChain.depthAlloc, nullptr) != VK_SUCCESS)
+            throw std::runtime_error("Failed to create depth image");
+
+        vk::ImageViewCreateInfo depthViewInfo{};
+        depthViewInfo.image = t_swapChain.depthImage;
+        depthViewInfo.viewType = vk::ImageViewType::e2D;
+        depthViewInfo.format = t_swapChain.depthFormat;
+        depthViewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
+        depthViewInfo.subresourceRange.levelCount = 1;
+        depthViewInfo.subresourceRange.layerCount = 1;
+        context.logicalDevice.createImageView(&depthViewInfo, nullptr, &t_swapChain.depthImageView);
+
         return t_swapChain;
     }
 
-    void Swapchains::Cleanup()
+
+    void Renderer::Vulkan::Swapchain::Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, Swapchain& swapChain)
     {
+        int width = 0, height = 0;
+
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
+        }
+
+        context.logicalDevice.waitIdle();
+
+        vk::SwapchainKHR oldSwapchain = swapChain.swapChainInstance;
+        context.logicalDevice.destroyImageView(swapChain.depthImageView);
+        vmaDestroyImage(context.vmaAllocator, swapChain.depthImage, swapChain.depthAlloc);
+
+        for (auto imageView : swapChain.swapChainImageViews)
+            context.logicalDevice.destroyImageView(imageView);
+        swapChain.swapChainImageViews.clear();
+        swapChain.swapChainImages.clear();
+        swapChain.swapChainInstance = VK_NULL_HANDLE;
+
+        // Create new swapchain, passing old handle so driver can recycle
+        swapChain = CreateSwapchain(context, window, oldSwapchain);
+
+        // Now safe to destroy old swapchain
+        context.logicalDevice.destroySwapchainKHR(oldSwapchain, nullptr);
+
     }
 
-    void Swapchains::Recreate(GLFWwindow* window)
+
+    void Renderer::Vulkan::Swapchain::CreateImageViews(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
     {
-    }
+        swapChain.swapChainImageViews.resize(swapChain.swapChainImages.size());
 
-
-    void Swapchains::CreateImageViews(Core::Vulkan::VulkanContext& context, Swapchains& t_swapChain)
-    {
-        t_swapChain.swapChainImageViews.resize(t_swapChain.swapChainImages.size());
-
-        for (size_t i = 0; i < t_swapChain.swapChainImages.size(); i++) {
+        for (size_t i = 0; i < swapChain.swapChainImages.size(); i++) {
             vk::ImageViewCreateInfo viewCreateInfo{};
-            viewCreateInfo.image = t_swapChain.swapChainImages[i];
+            viewCreateInfo.image = swapChain.swapChainImages[i];
             viewCreateInfo.viewType = vk::ImageViewType::e2D;
-            viewCreateInfo.format = t_swapChain.swapChainImageFormat;
+            viewCreateInfo.format = swapChain.swapChainImageFormat;
 
             viewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
             viewCreateInfo.subresourceRange.baseMipLevel = 0;
@@ -71,39 +169,25 @@ namespace Renderer::Vulkan
             viewCreateInfo.components.b = vk::ComponentSwizzle::eIdentity;
             viewCreateInfo.components.a = vk::ComponentSwizzle::eIdentity;
 
-            if (context.logicalDevice.createImageView(&viewCreateInfo, nullptr, &t_swapChain.swapChainImageViews[i]) != vk::Result::eSuccess) {
+            if (context.logicalDevice.createImageView(&viewCreateInfo, nullptr, &swapChain.swapChainImageViews[i]) != vk::Result::eSuccess) {
                 Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
                 logger->print("Failed to create image view");
             }
         }
     }
 
-    void Swapchains::CleanupSwapChain()
+    void Renderer::Vulkan::Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
     {
+        context.logicalDevice.destroyImageView(swapChain.depthImageView);
+        vmaDestroyImage(context.vmaAllocator, swapChain.depthImage, swapChain.depthAlloc);
+
+        for (auto imageView : swapChain.swapChainImageViews) 
+            context.logicalDevice.destroyImageView(imageView);
+
+            context.logicalDevice.destroySwapchainKHR(swapChain.swapChainInstance);
+            swapChain = {};
+
     }
 
-    vk::SurfaceFormatKHR Swapchains::ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats)
-    {
-        for (const auto& format : availableFormats) {
-            if (format.format == vk::Format::eB8G8R8A8Srgb && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
-                return format;
-
-            }
-        }
-        return availableFormats[0];
-    }
-
-    vk::PresentModeKHR Swapchains::ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes)
-    {
-        for (const auto& mode : availablePresentModes) {
-            if (mode == vk::PresentModeKHR::eMailbox)
-                return mode;
-        }
-        return vk::PresentModeKHR::eFifo;
-    }
-
-    vk::Extent2D Swapchains::ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, GLFWwindow* window)
-    {
-        return vk::Extent2D();
-    }
+    
 }
