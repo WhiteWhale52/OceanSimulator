@@ -1,5 +1,5 @@
 #pragma once
-#include "config.h"
+#include "CommonHeaders.h"
 #include <Logging/Logger.h>
 
 namespace Core::Vulkan {
@@ -12,6 +12,8 @@ namespace Core::Vulkan {
 		vk::PhysicalDeviceType requiredDeviceType = vk::PhysicalDeviceType::eDiscreteGpu;
 		PhysicalDeviceRequirements() = default;
 	};
+	
+	
 
 	bool IsDeviceSuitable(const vk::PhysicalDevice& physicalDevice, const PhysicalDeviceRequirements& reqs) 
 	{
@@ -47,4 +49,16 @@ namespace Core::Vulkan {
 		
 	}
 
+}
+
+namespace Core::Config {
+	struct PhysicalDeviceConfig {
+		vk::PhysicalDeviceProperties2 deviceProperties{};
+		vk::PhysicalDeviceMemoryProperties memoryProperties{};
+
+		bool supportsTimeStampsQueries = false;
+		bool supportsDynamicRendering = false;
+		bool supportsRayTracing = false;
+		bool supportsSynchronization2 = false;
+	};
 }

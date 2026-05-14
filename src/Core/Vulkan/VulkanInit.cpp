@@ -7,9 +7,9 @@ namespace Core::Vulkan {
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
+#if DEBUG_VULKAN
 		logger->print("Making an instance");
-
+#endif
 		/*
 		* An instance stores all per-application state info, it is a vulkan handle
 		* (An opaque integer or pointer value used to refer to a Vulkan object)
@@ -104,23 +104,31 @@ namespace Core::Vulkan {
 	/// <param name="context">Global Vulkan Context</param>
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
+#if DEBUG_VULKAN
 		logger->print("\nChoosing physical device...");
+#endif
 		std::vector<vk::PhysicalDevice> physicalDevices = context.instance.enumeratePhysicalDevices();
 
 		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
-			logger->logDevice(physicalDevice);
+#if DEBUG_VULKAN
+		logger->logDevice(physicalDevice);
+#endif
 			PhysicalDeviceRequirements reqs;
 			reqs.requiredExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 			if (!IsDeviceSuitable(physicalDevice, reqs))
 			{
-				logger->print(physicalDevice.getProperties().deviceName, "doesn't not meet requirements");
+#if DEBUG_VULKAN
+
+			logger->print(physicalDevice.getProperties().deviceName, "doesn't not meet requirements");
+#endif
 				continue;
 			}
 			context.physicalDevice = physicalDevice;
 			uint32_t queueFamilyCount = 0;
 			std::vector<vk::QueueFamilyProperties> queueFamiliesProperties = physicalDevice.getQueueFamilyProperties();
+#if DEBUG_VULKAN
 			logger->print("\nPhysical Device supports", queueFamiliesProperties.size(), "Queue Families.");
+#endif
 			bool foundGraphicsQFamily = false;
 			bool foundComputeQFamily = false;
 			bool choseTransferQFamily = false;
@@ -215,11 +223,25 @@ namespace Core::Vulkan {
 
 
 #if DEBUG_VULKAN
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
+		
 		logger->print("Logical Device Creation Successful.");
 #endif
 	}
 	
+
+	void CreateGLFWWindow(VulkanContext& context) {
+			// initialize glfw
+			glfwInit();
+
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+			glfwCreateWindowSurface(context.instance, window, nullptr, reinterpret_cast<VkSurfaceKHR*>(&context.surface));
+			if (window == glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
+#if DEBUG_VULKAN
+				logger->print("Successfully made a GLFW window called \"Ocean Waves \", width:", width, ", height: ", height, "\n");
+#endif
+			}
+	}
 	
 	void CreateCommandPools(VulkanContext& context)
 	{
@@ -325,10 +347,36 @@ namespace Core::Vulkan {
 		context.surface = static_cast<VkSurfaceKHR>(oldSurface);
 	}
 
+	void VMASetUp(VulkanContext& context)
+	{
+		VmaVulkanFunctions vmaFuncs{};
+		vmaFuncs.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+		vmaFuncs.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+		vmaFuncs.vkCreateImage = vkCreateImage;
+		vmaFuncs.vkCreateBuffer = vkCreateBuffer;
+
+		VmaAllocatorCreateInfo vmaAllocCreateInfo{};
+		vmaAllocCreateInfo.vulkanApiVersion = vk::enumerateInstanceVersion();
+		vmaAllocCreateInfo.instance = context.instance;
+		vmaAllocCreateInfo.physicalDevice = context.physicalDevice;
+		vmaAllocCreateInfo.device = context.logicalDevice;
+		vmaAllocCreateInfo.pVulkanFunctions = &vmaFuncs;
+		vmaAllocCreateInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+
+		VkResult vmaResult = vmaCreateAllocator(&vmaAllocCreateInfo, &context.vmaAllocator);
+		if (vmaResult != VK_SUCCESS)
+			throw std::runtime_error("Failed to create VMA allocator");
+	}
+
 	void Destroy(VulkanContext& context)
 	{
 		if (context.logicalDevice) {
 			context.logicalDevice.waitIdle();
+		}
+
+		if (context.vmaAllocator) {
+			vmaDestroyAllocator(context.vmaAllocator);
+			context.vmaAllocator = VK_NULL_HANDLE;
 		}
 
 		if (context.computeCmdPool) {
@@ -345,6 +393,11 @@ namespace Core::Vulkan {
 			context.logicalDevice.destroy();
 			context.logicalDevice = VK_NULL_HANDLE;
 		}
+
+		if (context.surface) {
+			vkDestroySurfaceKHR(context.instance, context.surface, nullptr);
+		}
+		
 
 
 		if (context.instance) {

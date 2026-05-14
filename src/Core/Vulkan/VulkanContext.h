@@ -1,5 +1,5 @@
 #pragma once
-#include "config.h"
+#include "CommonHeaders.h"
 
 namespace Core::Vulkan {
 	struct VulkanContext {
@@ -10,13 +10,20 @@ namespace Core::Vulkan {
 
 		uint32_t graphicsQueueFamily = UINT32_MAX;
 		uint32_t computeQueueFamily = UINT32_MAX;
+		uint32_t presentQueueFamily = UINT32_MAX;
+		uint32_t transferQueueFamily = UINT32_MAX;
+
 
 		vk::Queue graphicsQueue = VK_NULL_HANDLE;
 		vk::Queue computeQueue = VK_NULL_HANDLE;
+		vk::Queue presentQueue = VK_NULL_HANDLE;
+		vk::Queue transferQueue = VK_NULL_HANDLE;
 
 		vk::CommandPool graphicsCmdPool = VK_NULL_HANDLE;
 		vk::CommandPool computeCmdPool = VK_NULL_HANDLE;
 
 		vk::SurfaceKHR surface = VK_NULL_HANDLE;
+
+		VmaAllocator vmaAllocator = VK_NULL_HANDLE;
 	};
 }

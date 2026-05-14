@@ -1,7 +1,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include "Vulkan/config.h"
+#include "Vulkan/CommonHeaders.h"
 #include <Renderer.h>
 
 

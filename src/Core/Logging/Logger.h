@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Vulkan/config.h"
+#include <Vulkan/CommonHeaders.h>
 
 namespace Core::Logging {
 	
@@ -48,12 +48,14 @@ namespace Core::Logging {
 	);
 
 
-	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
+	void MakeDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
 
 	
-	void destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
+	void DestroyDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
 
-
+	void SetDebugName(vk::ObjectType type, uint64_t handle, const char* name);
+	void BeginDebugLabel(vk::CommandBuffer commandBuf, const char* name,	float r = 1, float g = 1, float b = 0, float a = 1);
+	void EndDebugLabel(vk::CommandBuffer commandBuf);
 	
 	class Logger {
 	public:

@@ -40,7 +40,7 @@ namespace Engine {
 		if (!debugMode) {
 			return;
 		}
-		Core::Logging::make_debug_messenger(instance, debugMessenger);
+		Core::Logging::MakeDebugMessenger(instance, debugMessenger);
 	}
 
 	Engine::~Engine() {
@@ -49,7 +49,7 @@ namespace Engine {
 		}
 
 		glfwTerminate();
-		Core::Logging::destroy_debug_messenger(instance, debugMessenger);
+		Core::Logging::DestroyDebugMessenger(instance, debugMessenger);
 
 		instance.destroy();
 	}

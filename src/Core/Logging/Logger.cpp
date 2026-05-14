@@ -24,7 +24,7 @@ namespace Core::Logging {
 		return VK_FALSE;
 	}
 
-	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
+	void MakeDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
 		vk::DebugUtilsMessengerCreateInfoEXT createInfo{};
 		createInfo.messageSeverity =
 			vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
@@ -46,11 +46,27 @@ namespace Core::Logging {
 	}
 
 
-	void destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
+	void DestroyDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger) {
 		auto vkDestroyDebugUtilsMessengerEXT = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 		vkDestroyDebugUtilsMessengerEXT(static_cast<VkInstance>(instance),
 			static_cast<VkDebugUtilsMessengerEXT>(messenger),nullptr);
 	}
+
+	//void SetDebugName(vk::ObjectType type, uint64_t handle, const char* name) {
+
+	//}
+
+
+	//void BeginDebugLabel(vk::CommandBuffer commandBuf, const char* name, float r = 1, float g = 1, float b = 0, float a = 1) {
+	//	vk::DebugUtilsLabelEXT label;
+	//	label.color = { r,g,b,a };
+	//	label.pLabelName = name;
+	//	
+	//	vk::PFN_de
+	//}
+	//void EndDebugLabel(vk::CommandBuffer commandBuf) {
+
+	//}
 
 
 	Logger* Logger::logger;

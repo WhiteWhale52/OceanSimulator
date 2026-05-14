@@ -48,7 +48,7 @@ target_sources(Core
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
 
- "Vulkan/VulkanInit.cpp" "Vulkan/VulkanInit.h" "Vulkan/VulkanContext.h" "Config/PhyDeviceFeaturesConfig.h" "Vulkan/PhysicalDeviceSupport.h"  )
+ "Vulkan/VulkanInit.cpp" "Vulkan/VulkanInit.h" "Vulkan/VulkanContext.h"  "Vulkan/PhysicalDeviceSupport.h"  )
 
 # ---- Link Libraries ----
 target_link_libraries(Core PUBLIC
