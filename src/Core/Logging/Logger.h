@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Vulkan/CommonHeaders.h>
+#include <VulkanCore/Config/CommonHeaders.h>
 
 namespace Core::Logging {
 	

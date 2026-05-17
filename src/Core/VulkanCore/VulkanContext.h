@@ -1,5 +1,5 @@
 #pragma once
-#include "CommonHeaders.h"
+#include "Config/CommonHeaders.h"
 
 namespace Core::Vulkan {
 	struct VulkanContext {

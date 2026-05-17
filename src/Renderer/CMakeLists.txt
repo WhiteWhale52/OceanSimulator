@@ -37,7 +37,7 @@ target_sources(Renderer PRIVATE
  "Vulkan/Swapchain.cpp"
  "Vulkan/SwapchainResources.cpp"
  "Vulkan/SwapchainResources.h"
-)
+ "Vulkan/ShaderModules.cpp")
 
 target_link_libraries(Renderer PUBLIC
     Core

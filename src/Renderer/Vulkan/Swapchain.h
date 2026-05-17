@@ -1,5 +1,5 @@
 #pragma once
-#include <Vulkan/VulkanContext.h> 
+#include <VulkanCore/VulkanContext.h> 
 #include <Logging/Logger.h>
 
 namespace Renderer::Vulkan
@@ -8,17 +8,18 @@ namespace Renderer::Vulkan
     struct Swapchain {
 
 
+        vk::SurfaceKHR surface = VK_NULL_HANDLE;
+
         vk::SwapchainKHR swapChainInstance = VK_NULL_HANDLE;
+
         vk::Format swapChainImageFormat;
         vk::ColorSpaceKHR colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
         vk::Extent2D extent;
         vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
-        vk::SurfaceKHR surface = VK_NULL_HANDLE;
 
         std::vector<vk::ImageView> swapChainImageViews;
         std::vector<vk::Image> swapChainImages;
         uint32_t imageCount = 0;
-
 
         vk::Image depthImage = VK_NULL_HANDLE;
         VmaAllocation depthAlloc = {  };

@@ -43,17 +43,17 @@ namespace Renderer::Vulkan
 
         vk::SurfaceCapabilitiesKHR capabilities = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
 
-        // Get surface formats (two-call pattern)
+        // Get format (two-call pattern)
         uint32_t formatCount = 0;
-        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, nullptr, nullptr);
+        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, nullptr);
         std::vector<vk::SurfaceFormatKHR> surfaceFormats(formatCount);
-        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, surfaceFormats.data(), nullptr);
+        context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, surfaceFormats.data());
 
         // Get present modes (two-call pattern)
         uint32_t modeCount = 0;
-        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, nullptr, nullptr);
+        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, nullptr);
         std::vector<vk::PresentModeKHR> surfaceModes(modeCount);
-        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, surfaceModes.data(), nullptr);
+        context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, surfaceModes.data());
 
         auto t_surfaceFormat = ChooseSwapSurfaceFormat(surfaceFormats);
         t_swapChain.swapChainImageFormat = t_surfaceFormat.format;
@@ -80,11 +80,9 @@ namespace Renderer::Vulkan
 
         // Get swapchain images (two-call pattern)
         uint32_t swapchainImageCount = 0;
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount,
-            nullptr, nullptr);
+        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount, nullptr);
         t_swapChain.swapChainImages.resize(swapchainImageCount);
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount,
-            t_swapChain.swapChainImages.data(), nullptr);
+        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount, t_swapChain.swapChainImages.data());
 
         CreateImageViews(context, t_swapChain);
 

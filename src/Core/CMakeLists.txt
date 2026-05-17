@@ -20,7 +20,14 @@ link_directories("$ENV{VULKAN_SDK}/Lib")
 
 # ---- Include VulkanMemoryAllocator ----
 add_library(VulkanMemoryAllocator INTERFACE)
+
+
 target_include_directories(VulkanMemoryAllocator INTERFACE "${CMAKE_SOURCE_DIR}/external/VulkanMemoryAllocator/include")
+add_library(spirv-reflect STATIC
+    "${CMAKE_SOURCE_DIR}/external/spirv-reflect/spirv_reflect.cpp")
+target_include_directories(spirv-reflect PUBLIC
+    "${CMAKE_SOURCE_DIR}/external/spirv-reflect"
+)
 
 target_link_libraries(VulkanMemoryAllocator
     INTERFACE
@@ -48,7 +55,7 @@ target_sources(Core
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
 
- "Vulkan/VulkanInit.cpp" "Vulkan/VulkanInit.h" "Vulkan/VulkanContext.h"  "Vulkan/PhysicalDeviceSupport.h"  )
+ "VulkanCore/VulkanInit.cpp" "VulkanCore/VulkanInit.h" "VulkanCore/VulkanContext.h"  "VulkanCore/PhysicalDeviceSupport.h"   "VulkanCore/Config/ResourcesConfigs.h" )
 
 # ---- Link Libraries ----
 target_link_libraries(Core PUBLIC
@@ -56,4 +63,5 @@ target_link_libraries(Core PUBLIC
         Vulkan::Vulkan
         Vulkan::glslang
         VulkanMemoryAllocator
+        spirv-reflect
 )

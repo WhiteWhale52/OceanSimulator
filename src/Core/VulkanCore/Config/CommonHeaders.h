@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #include <Memory/VMAUsage.cpp>
+#include <vulkan/vulkan_raii.hpp>
 
  
 /*
@@ -28,3 +29,4 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <cstdint>

@@ -340,8 +340,9 @@ namespace Core::Vulkan {
 	{
 		VkSurfaceKHR oldSurface = VK_NULL_HANDLE;
 		if (glfwCreateWindowSurface(context.instance, window, nullptr, &oldSurface) != VK_SUCCESS) {
-			Logging::Logger* logger = Core::Logging::Logger::get_logger();
+#if DEBUG_VULKAN
 			logger->print("Failed to create window surface");
+#endif
 			return;
 		}
 		context.surface = static_cast<VkSurfaceKHR>(oldSurface);

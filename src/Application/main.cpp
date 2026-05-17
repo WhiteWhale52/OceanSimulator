@@ -1,7 +1,7 @@
 #include "Engine.h"
 #include <Logging/Logger.h>
-#include <Vulkan/VulkanContext.h>
-#include <Vulkan/VulkanInit.h>
+#include <VulkanCore/VulkanContext.h>
+#include <VulkanCore/VulkanInit.h>
 #include <Config/AppConfig.h>
 
 int main() {
