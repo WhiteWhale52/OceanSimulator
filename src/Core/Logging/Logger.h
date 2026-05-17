@@ -64,11 +64,12 @@ namespace Core::Logging {
 		static Logger* get_logger();
 
 
-		void print();
+		
 		
 		
 		template<typename T, typename... Args>
 		void print(T first, Args... args) {
+#if DEBUG_VULKAN
 			std::cout << first;
 			if constexpr (sizeof...(args) > 0) {
 				std::cout << " ";
@@ -77,6 +78,9 @@ namespace Core::Logging {
 			else {
 				std::cout << std::endl;
 			}
+#else
+			return
+#endif
 		}
 
 		void report_version_number(uint32_t version);
