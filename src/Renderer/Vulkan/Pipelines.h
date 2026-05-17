@@ -11,7 +11,8 @@ namespace Renderer::Vulkan {
     struct GraphicsPipelineConfig {
         std::string              vertShader;
         std::string              fragShader;
-        std::string              tesShader;     // Optional
+        std::string              tesControlShader;     // Optional
+        std::string              tesEvalShader;     // Optional
         std::string              geomShader;     // Optional
         vk::PrimitiveTopology    topology = vk::PrimitiveTopology::eTriangleList;
         vk::CullModeFlagBits     cullMode = vk::CullModeFlagBits::eBack;

@@ -14,43 +14,43 @@ namespace Engine {
 
 	}
 
-	void Engine::build_glfw_window() {
+	//void Engine::build_glfw_window() {
 
-		// initialize glfw
-		glfwInit();
+	//	// initialize glfw
+	//	glfwInit();
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	//	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	//	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-		if (window == glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
-			if (debugMode) {
-				std::cout << "Successfully made a GLFW window called \"Ocean Waves \", width: " << width << ", height: " << height << "\n";
-			}
-		}
-		else {
-			if (debugMode) {
-				std::cout << "GLFW Window creation failed \n";
-			}
-		}
-	}
+	//	if (window == glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
+	//		if (debugMode) {
+	//			std::cout << "Successfully made a GLFW window called \"Ocean Waves \", width: " << width << ", height: " << height << "\n";
+	//		}
+	//	}
+	//	else {
+	//		if (debugMode) {
+	//			std::cout << "GLFW Window creation failed \n";
+	//		}
+	//	}
+	//}
 
 
 
-	void Engine::make_debug_messenger() {
-		if (!debugMode) {
-			return;
-		}
-		Core::Logging::MakeDebugMessenger(instance, debugMessenger);
-	}
+	//void Engine::make_debug_messenger() {
+	//	if (!debugMode) {
+	//		return;
+	//	}
+	//	Core::Logging::MakeDebugMessenger(instance, debugMessenger);
+	//}
 
-	Engine::~Engine() {
-		if (debugMode) {
-			std::cout << "Goodbye see you \n";
-		}
+	//Engine::~Engine() {
+	//	if (debugMode) {
+	//		std::cout << "Goodbye see you \n";
+	//	}
 
-		glfwTerminate();
-		Core::Logging::DestroyDebugMessenger(instance, debugMessenger);
+	//	glfwTerminate();
+	//	Core::Logging::DestroyDebugMessenger(instance, debugMessenger);
 
-		instance.destroy();
-	}
+	//	instance.destroy();
+	//}
 }

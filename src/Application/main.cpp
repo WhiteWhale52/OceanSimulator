@@ -1,6 +1,4 @@
-#include "Engine.h"
-#include <Logging/Logger.h>
-#include <VulkanCore/VulkanContext.h>
+//#include <Engine.h>
 #include <VulkanCore/VulkanInit.h>
 #include <Config/AppConfig.h>
 
@@ -15,12 +13,18 @@ int main() {
 	Core::Vulkan::VulkanContext context{};
 
 	Core::Vulkan::CreateInstance(context, appConfig);
+	GLFWwindow* window = Core::Vulkan::CreateGLFWWindow(context);
+	Core::Vulkan::CreateSurface(context, window);
 	Core::Vulkan::ChoosePhysicalDevice(context);
 	Core::Vulkan::CreateDeviceAndQueues(context);
+	Core::Vulkan::VMASetUp(context);
 	Core::Vulkan::CreateCommandPools(context);
 
 //	Engine::Engine* graphicsEngine = new Engine::Engine();
 //	delete graphicsEngine;
+	while (!glfwWindowShouldClose(window)) {
+		// Frame code...
+	}
 	Core::Vulkan::Destroy(context);
 	return 0;
 }

@@ -2,5 +2,5 @@
 #include <VulkanCore/Config/CommonHeaders.h>
 
 namespace Renderer::Vulkan {
-	static char* ReadFile(const )
+//	static char* ReadFile(const )
 }

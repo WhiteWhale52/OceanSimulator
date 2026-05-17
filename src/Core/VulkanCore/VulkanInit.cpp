@@ -42,25 +42,24 @@ namespace Core::Vulkan {
 
 
 		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 		extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
-
+		for (uint32_t i = 0; i < glfwExtensionCount; i++) {
+			extensions.push_back(glfwExtensions[i]);
+		}
 		// This is where we add any new extensions we want to check
 		// extensions were the extensions required by glfw
 		// Then we add any more extensions for other purposes 
 #if DEBUG_VULKAN
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
-
-
+		extensions.push_back("VK_KHR_win32_surface");
 
 		logger->print("Instance Extensions to be requested");
 		for (const char* extensionName : extensions) {
-			logger->print("\t\"extensionName\"");
+			logger->print(extensionName);
 		}
 
 		std::vector<const char*> layers;
@@ -201,7 +200,7 @@ namespace Core::Vulkan {
 
 		std::vector<const char*> deviceExtensions;
 		deviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-		
+		//deviceExtensions.emplace_back(VK_KHR_surface);
 
 		vk::DeviceCreateInfo deviceCreateInfo{};
 		deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(deviceQueuesCI.size());
@@ -229,18 +228,21 @@ namespace Core::Vulkan {
 	}
 	
 
-	void CreateGLFWWindow(VulkanContext& context) {
+	GLFWwindow* CreateGLFWWindow(VulkanContext& context) {
 			// initialize glfw
 			glfwInit();
-
+			int width{ 640 };
+			int height{ 480 };
+			GLFWwindow* window{ nullptr };
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-			glfwCreateWindowSurface(context.instance, window, nullptr, reinterpret_cast<VkSurfaceKHR*>(&context.surface));
-			if (window == glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
+			window = glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr);
+			if (window != nullptr){
 #if DEBUG_VULKAN
 				logger->print("Successfully made a GLFW window called \"Ocean Waves \", width:", width, ", height: ", height, "\n");
 #endif
 			}
+			return window;
 	}
 	
 	void CreateCommandPools(VulkanContext& context)

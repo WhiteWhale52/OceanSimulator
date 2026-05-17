@@ -22,7 +22,7 @@ namespace Renderer::Vulkan {
 
 	}
 
-	void Renderer::Vulkan::ShaderModule::LoadSPIRV(const Core::Vulkan::VulkanContext& context, const std::string& filename)
+	void ShaderModule::LoadSPIRV(const Core::Vulkan::VulkanContext& context, const std::string& filename)
 	{
 		auto spirv = ReadSPIRVFile(filename);
 
@@ -65,6 +65,7 @@ namespace Renderer::Vulkan {
 	Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext& context, const GraphicsPipelineConfig& graphicsPipeConfig)
 	{
 		Pipeline graphicsPipeline;
+		std::vector<vk::PipelineShaderStageCreateInfo> stages;
 
 		ShaderModule vertShader = ShaderModule();
 		vertShader.LoadSPIRV(context, graphicsPipeConfig.vertShader);
@@ -72,17 +73,46 @@ namespace Renderer::Vulkan {
 		ShaderModule fragShader = ShaderModule();
 		fragShader.LoadSPIRV(context, graphicsPipeConfig.fragShader);
 
-		if (!graphicsPipeConfig.tesShader.empty()) {
-			ShaderModule tesShader = ShaderModule();
-			tesShader.LoadSPIRV(context, graphicsPipeConfig.tesShader);
+		vk::PipelineShaderStageCreateInfo vertStageCreateInfo;
+		vertStageCreateInfo.stage = vk::ShaderStageFlagBits::eVertex;
+		vertStageCreateInfo.module = vertShader.handle;
+		vertStageCreateInfo.pName = "main";
+		stages.push_back(vertStageCreateInfo);
+
+		vk::PipelineShaderStageCreateInfo fragStageCreateInfo;
+		fragStageCreateInfo.stage = vk::ShaderStageFlagBits::eFragment;
+		fragStageCreateInfo.module = fragShader.handle;
+		fragStageCreateInfo.pName = "main";
+		stages.push_back(fragStageCreateInfo);
+
+		if (!graphicsPipeConfig.tesControlShader.empty() && !graphicsPipeConfig.tesEvalShader.empty()) {
+			
+			ShaderModule tesControlShader = ShaderModule();
+			tesControlShader.LoadSPIRV(context, graphicsPipeConfig.tesControlShader);
+			
+			ShaderModule tesEvalShader = ShaderModule();
+			tesEvalShader.LoadSPIRV(context, graphicsPipeConfig.tesEvalShader);
+			
+			vk::PipelineShaderStageCreateInfo tesControlStageCreateInfo;
+			tesControlStageCreateInfo.stage = vk::ShaderStageFlagBits::eTessellationControl;
+			tesControlStageCreateInfo.module = fragShader.handle;
+			tesControlStageCreateInfo.pName = "main";
+			stages.push_back(tesControlStageCreateInfo);
+			
+			vk::PipelineShaderStageCreateInfo tesEvalStageCreateInfo;
+			tesEvalStageCreateInfo.stage = vk::ShaderStageFlagBits::eTessellationEvaluation;
+			tesEvalStageCreateInfo.module = tesEvalShader.handle;
+			tesEvalStageCreateInfo.pName = "main";
+			stages.push_back(tesEvalStageCreateInfo);
 		}
 
-		std::vector<vk::PipelineShaderStageCreateInfo> stages;
+	
 		
-		vk::PipelineShaderStageCreateInfo vertShaderCreateInfo;
-		vertShaderCreateInfo.stage = vk::
+
 
 		return  graphicsPipeline;
+
+
 	}
 
 	void Pipeline::DestroyPipeline(Core::Vulkan::VulkanContext context, Pipeline& pipeline)
