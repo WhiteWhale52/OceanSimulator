@@ -66,9 +66,9 @@ namespace Renderer::Vulkan {
         void DestroyPipeline(Core::Vulkan::VulkanContext context, Pipeline& pipeline);
 	};
 
-    Pipeline CreateComputePipeline(Core::Vulkan::VulkanContext & context, const ComputePipelineConfig& computePipeConfig);
+    Pipeline CreateComputePipeline(Core::Vulkan::VulkanContext & context, const ComputePipelineConfig& computePipeConfig, const vk::PipelineCache& pipelineCache = nullptr);
 
-    Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext & context, const GraphicsPipelineConfig& graphicsPipeConfig);
+    Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext & context, const GraphicsPipelineConfig& graphicsPipeConfig, const vk::PipelineCache& pipelineCache = nullptr);
 
 
     struct ShaderModule {
