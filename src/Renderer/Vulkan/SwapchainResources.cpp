@@ -50,31 +50,31 @@ namespace Renderer::Vulkan {
         context.logicalDevice.createRenderPass(&createInfo, nullptr, &handle);
     }
 
-    void RenderPass::Destroy(Core::Vulkan::VulkanContext& context) {
+    void RenderPass::Destroy(const Core::Vulkan::VulkanContext& context) {
         if (handle != VK_NULL_HANDLE) {
             context.logicalDevice.destroyRenderPass(handle);
         }
     }
 
-    FrameBuffer Renderer::Vulkan::FrameBuffer::Create(const Core::Vulkan::VulkanContext& context, vk::RenderPass renderPass, vk::ImageView colorView, vk::ImageView depthView, uint32_t width, uint32_t height)
+    void FrameBuffer::Create(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass, vk::ImageView colorView, vk::ImageView depthView, uint32_t width, uint32_t height)
     {
-        FrameBuffer m_FrameBuffer;
+        
 
         vk::ImageView attachments[]{ colorView, depthView };
 
         vk::FramebufferCreateInfo createInfo;
         createInfo.height = height;
         createInfo.width = width;
-        createInfo.renderPass = renderPass;
+        createInfo.renderPass = renderPass.handle;
         createInfo.attachmentCount = 2;
         createInfo.pAttachments = attachments;
         createInfo.layers = 1;
-        context.logicalDevice.createFramebuffer(&createInfo, nullptr, &m_FrameBuffer.handle);
+        context.logicalDevice.createFramebuffer(&createInfo, nullptr, &handle);
 
-        return m_FrameBuffer;
+        return ;
     }
 
-    void FrameBuffer::Destroy(Core::Vulkan::VulkanContext& context)
+    void FrameBuffer::Destroy(const Core::Vulkan::VulkanContext& context)
     {
         if (handle != VK_NULL_HANDLE) {
             context.logicalDevice.destroyFramebuffer(handle);

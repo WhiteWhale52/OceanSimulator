@@ -37,19 +37,17 @@ namespace Renderer::Vulkan
         };
     }
 
-    Swapchain Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain)
+    Swapchain Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, vk::SwapchainKHR oldSwapChain)
     {
         Swapchain t_swapChain{};
 
         vk::SurfaceCapabilitiesKHR capabilities = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
 
-        // Get format (two-call pattern)
         uint32_t formatCount = 0;
         context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, nullptr);
         std::vector<vk::SurfaceFormatKHR> surfaceFormats(formatCount);
         context.physicalDevice.getSurfaceFormatsKHR(context.surface, &formatCount, surfaceFormats.data());
 
-        // Get present modes (two-call pattern)
         uint32_t modeCount = 0;
         context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, nullptr);
         std::vector<vk::PresentModeKHR> surfaceModes(modeCount);
@@ -113,11 +111,19 @@ namespace Renderer::Vulkan
         depthViewInfo.subresourceRange.layerCount = 1;
         context.logicalDevice.createImageView(&depthViewInfo, nullptr, &t_swapChain.depthImageView);
 
+        
+        frameBuffers.reserve(imageCount + 1);
+        for (size_t i = 0; i < imageCount + 1; i++) {
+            FrameBuffer frameBuffer;
+            frameBuffer.Create(context, renderPass, t_swapChain.swapChainImageViews[i], t_swapChain.depthImageView,
+                extent.width, extent.height);
+        }
+
         return t_swapChain;
     }
 
 
-    void Renderer::Vulkan::Swapchain::Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, Swapchain& swapChain)
+    void Swapchain::Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, Swapchain& swapChain)
     {
         int width = 0, height = 0;
 
@@ -139,7 +145,7 @@ namespace Renderer::Vulkan
         swapChain.swapChainInstance = VK_NULL_HANDLE;
 
         // Create new swapchain, passing old handle so driver can recycle
-        swapChain = CreateSwapchain(context, window, oldSwapchain);
+        swapChain = CreateSwapchain(context, window, renderPass, oldSwapchain);
 
         // Now safe to destroy old swapchain
         context.logicalDevice.destroySwapchainKHR(oldSwapchain, nullptr);
@@ -176,14 +182,19 @@ namespace Renderer::Vulkan
 
     void Renderer::Vulkan::Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
     {
+        for (auto& frameBuffer : frameBuffers) {
+            frameBuffer.Destroy(context);
+        }
+        frameBuffers.clear();
         context.logicalDevice.destroyImageView(swapChain.depthImageView);
         vmaDestroyImage(context.vmaAllocator, swapChain.depthImage, swapChain.depthAlloc);
 
         for (auto imageView : swapChain.swapChainImageViews) 
             context.logicalDevice.destroyImageView(imageView);
-
-            context.logicalDevice.destroySwapchainKHR(swapChain.swapChainInstance);
-            swapChain = {};
+        swapChain.swapChainImageViews.clear();
+        swapChain.swapChainImages.clear();
+        context.logicalDevice.destroySwapchainKHR(swapChain.swapChainInstance);
+        swapChain = {};
 
     }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <VulkanCore/VulkanContext.h> 
 #include <Logging/Logger.h>
+#include "SwapchainResources.h"
 
 namespace Renderer::Vulkan
 {
@@ -19,6 +20,7 @@ namespace Renderer::Vulkan
 
         std::vector<vk::ImageView> swapChainImageViews;
         std::vector<vk::Image> swapChainImages;
+        std::vector<FrameBuffer> frameBuffers;
         uint32_t imageCount = 0;
 
         vk::Image depthImage = VK_NULL_HANDLE;
@@ -28,8 +30,8 @@ namespace Renderer::Vulkan
         vk::Format depthFormat = vk::Format::eD32Sfloat;
 
 
-        Swapchain CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain);
-        void Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, Swapchain& swapChain);
+        Swapchain CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, vk::SwapchainKHR oldSwapChain);
+        void Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, Swapchain& swapChain);
 
         vk::SwapchainKHR GetSwapChain() const { return swapChainInstance; }
         const std::vector<vk::Image>& GetImages() const { return swapChainImages; }

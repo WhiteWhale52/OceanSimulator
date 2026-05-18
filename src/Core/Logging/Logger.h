@@ -64,7 +64,7 @@ namespace Core::Logging {
 		static Logger* get_logger();
 
 
-		
+		void print();
 		
 		
 		template<typename T, typename... Args>
@@ -78,9 +78,8 @@ namespace Core::Logging {
 			else {
 				std::cout << std::endl;
 			}
-#else
-			return
 #endif
+			return;
 		}
 
 		void report_version_number(uint32_t version);

@@ -212,8 +212,8 @@ namespace Renderer::Vulkan {
 		graphicsPipelineCreateInfo.layout = graphicsPipeline.layout;
 		graphicsPipelineCreateInfo.subpass = 0;
 
-		context.logicalDevice.createGraphicsPipeline(pipelineCache, graphicsPipelineCreateInfo, nullptr,
-			graphicsPipeline.handle);
+		graphicsPipeline.handle = context.logicalDevice.
+			createGraphicsPipeline(pipelineCache,graphicsPipelineCreateInfo).value;
 
 		return  graphicsPipeline;
 

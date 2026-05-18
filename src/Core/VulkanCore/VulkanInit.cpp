@@ -259,7 +259,6 @@ namespace Core::Vulkan {
 
 	 bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
 		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
 
@@ -284,7 +283,7 @@ namespace Core::Vulkan {
 
 			logger->print("\nThe instance supports the following layers: \n");
 			for (const vk::LayerProperties& supportedLayer : supportedLayers) {
-				logger->("\t\"", upportedLayer.layerName, "\"\n");
+				logger->print("\t\"", supportedLayer.layerName, "\"\n");
 			}
 		for (const char* layer : layers) {
 			found = false;
