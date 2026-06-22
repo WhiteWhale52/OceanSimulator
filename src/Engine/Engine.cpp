@@ -22,7 +22,7 @@ namespace Engine {
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-		if (window = glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
+		if (window == glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr)) {
 			if (debugMode) {
 				std::cout << "Successfully made a GLFW window called \"Ocean Waves \", width: " << width << ", height: " << height << "\n";
 			}
@@ -40,7 +40,7 @@ namespace Engine {
 		if (!debugMode) {
 			return;
 		}
-		debugMessenger = Core::Logging::make_debug_messenger(instance, debugMessenger);
+		Core::Logging::make_debug_messenger(instance, debugMessenger);
 	}
 
 	Engine::~Engine() {

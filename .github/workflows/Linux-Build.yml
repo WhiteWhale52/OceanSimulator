@@ -1,0 +1,118 @@
+name: Builds on Linux with caching (Ubuntu)
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04]
+        build_type: [Release, Debug]
+        c_compiler: [gcc, clang]
+        include:
+          - os: ubuntu-24.04
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-24.04
+            c_compiler: clang
+            cpp_compiler: clang++
+
+
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ubuntu-${{  matrix.cpp_compiler }}-${{ matrix.build_type }}
+        max-size: 500M
+
+    - name: Cache Vulkan SDK
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/VULKAN_SDK
+          ~/.vulkan
+        key: vulkan-ubuntu-1.4.304.1
+        restore-keys: |
+          vulkan-ubuntu-
+
+    # Cache APT packages
+    - name: Cache APT packages
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: ninja-build libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev
+        version: 1.0
+
+
+    - name: Install Linux Dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          ninja-build \
+          libwayland-dev \
+          libxkbcommon-dev \
+          wayland-protocols \
+          extra-cmake-modules \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libglu1-mesa-dev
+
+    - name: Prepare Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.1
+      with:
+       vulkan-query-version: 1.4.304.1
+       vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Headers, SPIRV-Tools, SPIRV-Cross, Glslang
+       vulkan-use-cache: true
+
+   
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '4.1.x'
+        
+    - name: Use cmake
+      run: cmake --version
+
+    - name: Cache CMake dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/build/_deps
+        key: cmake-deps-ubuntu-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          cmake-deps-ubuntu-
+      
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+  
+    - name: Configure CMake with Ninja and ccache
+      run: >
+        cmake -B build
+        -G Ninja
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
+  
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} --parallel $(nproc)
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure

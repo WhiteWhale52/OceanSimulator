@@ -50,7 +50,7 @@ namespace Engine {
 		void build_glfw_window();
 
 
-		void make_instance();
+//		void make_instance();
 
 		void make_debug_messenger();
 

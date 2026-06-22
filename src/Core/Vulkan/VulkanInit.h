@@ -22,5 +22,4 @@ namespace Core::Vulkan {
 
 	void Destroy(VulkanContext& context);
 	
-	
 }

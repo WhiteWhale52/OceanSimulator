@@ -2,7 +2,7 @@
 #include <Logging/Logger.h>
 #include <Vulkan/VulkanContext.h>
 #include <Vulkan/VulkanInit.h>
-#include <Config/appConfig.h>
+#include <Config/AppConfig.h>
 
 int main() {
 	
