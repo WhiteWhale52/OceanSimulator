@@ -34,7 +34,7 @@ jobs:
           path: |
             ${{ github.workspace }}/VULKAN_SDK
             ~/.vulkan
-          key: vulkan-${{ runner.os }}-1.4.304.1
+          key: vulkan-${{ runner.os }}-1.4.350.1
           restore-keys: |
             vulkan-${{ runner.os }}-
 
