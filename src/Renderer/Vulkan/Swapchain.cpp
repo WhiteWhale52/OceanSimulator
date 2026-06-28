@@ -1,7 +1,10 @@
 #include "Swapchain.h"
 
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 namespace Renderer::Vulkan
 {
     vk::SurfaceFormatKHR Swapchain::ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats)

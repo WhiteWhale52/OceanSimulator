@@ -17,7 +17,6 @@ link_directories("$ENV{VULKAN_SDK}/Lib")
 
 
 
-
 # ---- Include VulkanMemoryAllocator ----
 add_library(VulkanMemoryAllocator INTERFACE)
 
@@ -55,7 +54,13 @@ target_sources(Core
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
 
+<<<<<<< Updated upstream
  "VulkanCore/VulkanInit.cpp" "VulkanCore/VulkanInit.h" "VulkanCore/VulkanContext.h"  "VulkanCore/PhysicalDeviceSupport.h"   "VulkanCore/Config/ResourcesConfigs.h"  "Memory/VMAUsage.h")
+=======
+ "Vulkan/VulkanInit.cpp" "Vulkan/VulkanInit.h"
+ "Vulkan/VulkanContext.h" "Config/PhyDeviceFeaturesConfig.h"
+ "Vulkan/PhysicalDeviceSupport.h"  )
+>>>>>>> Stashed changes
 
 # ---- Link Libraries ----
 target_link_libraries(Core PUBLIC
