@@ -53,14 +53,10 @@ target_sources(Core
            ${IMGUI_SOURCES}
         "Memory/VMAUsage.cpp"
         "Logging/Logger.cpp"
+ "VulkanCore/VulkanInit.cpp" "VulkanCore/VulkanInit.h"
+ "VulkanCore/VulkanContext.h" "VulkanCore/Config/ResourcesConfigs.h"
+ "VulkanCore/PhysicalDeviceSupport.h"  )
 
-<<<<<<< Updated upstream
- "VulkanCore/VulkanInit.cpp" "VulkanCore/VulkanInit.h" "VulkanCore/VulkanContext.h"  "VulkanCore/PhysicalDeviceSupport.h"   "VulkanCore/Config/ResourcesConfigs.h"  "Memory/VMAUsage.h")
-=======
- "Vulkan/VulkanInit.cpp" "Vulkan/VulkanInit.h"
- "Vulkan/VulkanContext.h" "Config/PhyDeviceFeaturesConfig.h"
- "Vulkan/PhysicalDeviceSupport.h"  )
->>>>>>> Stashed changes
 
 # ---- Link Libraries ----
 target_link_libraries(Core PUBLIC
