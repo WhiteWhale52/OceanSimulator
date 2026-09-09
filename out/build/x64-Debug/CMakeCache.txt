@@ -546,7 +546,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DOXYGEN_EXECUTABLE
 DOXYGEN_EXECUTABLE-ADVANCED:INTERNAL=1
 //Details about finding Doxygen
-FIND_PACKAGE_MESSAGE_DETAILS_Doxygen:INTERNAL=[C:/Program Files/doxygen/bin/doxygen.exe][found components: doxygen ][v1.17.0()]
+FIND_PACKAGE_MESSAGE_DETAILS_Doxygen:INTERNAL=[C:/Program Files/doxygen/bin/doxygen.exe][found components: doxygen ][v1.18.0()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding Vulkan

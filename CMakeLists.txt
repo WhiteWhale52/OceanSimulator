@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(Vulkan_ROOT "$ENV{VULKAN_SDK}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(PCH_HEADER "${CMAKE_SOURCE_DIR}/src/pch.h")
+set(PCH_HEADER "${CMAKE_SOURCE_DIR}/src/Renderer/pch.h")
 
 # ---- Find Packages ----
 find_package(Vulkan REQUIRED COMPONENTS glslang)
