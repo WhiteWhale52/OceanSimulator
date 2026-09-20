@@ -13,7 +13,7 @@ namespace Renderer::Vulkan {
 		}
 
 		size_t fileSize = (size_t)file.tellg();
-		std::vector<uint32_t> buffer(fileSize / sizeof(size_t));
+		std::vector<uint32_t> buffer(fileSize / sizeof(uint32_t));
 
 		file.seekg(0);
 		file.read((char*)buffer.data(), fileSize);
@@ -222,11 +222,12 @@ namespace Renderer::Vulkan {
 
 	}
 
-	void Pipeline::DestroyPipeline(Core::Vulkan::VulkanContext context, Pipeline& pipeline)
-	{
-		if (pipeline.handle) {
+	void Pipeline::Destroy(const Core::Vulkan::VulkanContext& context) {
+		if (handle) {
 			context.logicalDevice.destroyPipeline(handle);
 			context.logicalDevice.destroyPipelineLayout(layout);
+			handle = nullptr;
+			layout = nullptr;
 		}
 	}
 

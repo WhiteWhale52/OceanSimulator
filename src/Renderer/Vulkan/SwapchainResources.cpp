@@ -16,14 +16,14 @@ namespace Renderer::Vulkan {
         colorAttachement.finalLayout = vk::ImageLayout::ePresentSrcKHR;
 
         vk::AttachmentDescription depthAttachement;
-        colorAttachement.format = depthFormat;
-        colorAttachement.samples = vk::SampleCountFlagBits::e1;
-        colorAttachement.loadOp = vk::AttachmentLoadOp::eClear;
-        colorAttachement.storeOp = vk::AttachmentStoreOp::eStore;
-        colorAttachement.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-        colorAttachement.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-        colorAttachement.initialLayout = vk::ImageLayout::eUndefined;
-        colorAttachement.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
+        depthAttachement.format = depthFormat;
+        depthAttachement.samples = vk::SampleCountFlagBits::e1;
+        depthAttachement.loadOp = vk::AttachmentLoadOp::eClear;
+        depthAttachement.storeOp = vk::AttachmentStoreOp::eStore;
+        depthAttachement.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
+        depthAttachement.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
+        depthAttachement.initialLayout = vk::ImageLayout::eUndefined;
+        depthAttachement.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
         vk::AttachmentReference colorRef;
         colorRef.attachment = 1;

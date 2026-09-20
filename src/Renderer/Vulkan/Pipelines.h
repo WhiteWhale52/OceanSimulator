@@ -66,7 +66,7 @@ namespace Renderer::Vulkan {
             std::vector<vk::DescriptorSetLayout>& outSetLayouts);
 
 
-        void DestroyPipeline(Core::Vulkan::VulkanContext context, Pipeline& pipeline);
+        void Destroy(const Core::Vulkan::VulkanContext& context);
 	};
 
     Pipeline CreateComputePipeline(Core::Vulkan::VulkanContext & context,  ComputePipelineConfig& computePipeConfig, 
