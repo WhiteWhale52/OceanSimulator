@@ -6,7 +6,7 @@ namespace Engine {
 
 
 
-	Engine::Engine(Renderer::Renderer renderer) {
+	Engine::Engine(TheRenderer::Renderer renderer) {
 
 		if (debugMode) {
 			std::cout << "Making a graphics window \n";

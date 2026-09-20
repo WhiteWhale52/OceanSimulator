@@ -3,7 +3,7 @@
 #include <Logging/Logger.h>
 #include "SwapchainResources.h"
 
-namespace Renderer::Vulkan
+namespace TheRenderer::Vulkan
 {
 
     struct Swapchain {

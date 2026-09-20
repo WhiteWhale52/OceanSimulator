@@ -193,8 +193,8 @@ namespace Core::Vulkan {
 		std::vector<const char*> layers{
 			"VK_LAYER_KHRONOS_validation",
 		};
-		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
-		deviceCreateInfo.ppEnabledLayerNames = layers.data();
+		//deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+		//deviceCreateInfo.ppEnabledLayerNames = layers.data();
 		context.logicalDevice = context.physicalDevice.createDevice(deviceCreateInfo);
 		
 		context.computeQueue = context.logicalDevice.getQueue(context.computeQueueFamily, 0);

@@ -1,6 +1,7 @@
 #include "CommandBuffers.h"
 
-namespace Renderer::Vulkan {
+
+namespace TheRenderer::Vulkan {
 
 	CommandBuffers::CommandBuffers(Core::Vulkan::VulkanContext& context) : m_context(context)
 	{
@@ -27,8 +28,8 @@ namespace Renderer::Vulkan {
 
 	}
 
-	void CommandBuffers::RecordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex, vk::RenderPass renderPass,
-		const std::vector<vk::Framebuffer>& frameBuffers, vk::Extent2D swapchainExtent, vk::Pipeline graphicsPipeline, vk::Buffer vertexBuffer, uint32_t vertexCount)
+	void CommandBuffers::RecordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex,const SwapchainResources& swapchainResources,
+		vk::Extent2D swapchainExtent, vk::Pipeline graphicsPipeline, vk::Buffer vertexBuffer, uint32_t vertexCount)
 	{
 		vk::CommandBufferBeginInfo begineInfo{};
 		commandBuffer.begin(begineInfo);
@@ -37,9 +38,9 @@ namespace Renderer::Vulkan {
 		clearColour.color = vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f});
 
 		vk::RenderPassBeginInfo rbBeginInfo{};
-		rbBeginInfo.renderPass = renderPass;
+		rbBeginInfo.renderPass = swapchainResources.renderPass.handle;
 		rbBeginInfo.clearValueCount = 1;
-		rbBeginInfo.framebuffer = frameBuffers[imageIndex];
+		rbBeginInfo.framebuffer = swapchainResources.framebuffers[imageIndex].handle;
 		rbBeginInfo.renderArea.offset = vk::Offset2D{ 0,0 };
 		rbBeginInfo.renderArea.extent = swapchainExtent;
 		rbBeginInfo.pClearValues = &clearColour;

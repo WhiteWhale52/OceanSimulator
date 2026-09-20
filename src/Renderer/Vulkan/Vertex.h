@@ -1,7 +1,7 @@
 #pragma once
 #include <VulkanCore/Config/CommonHeaders.h>
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
 	struct Vertex {
 		glm::vec3 position;
 		glm::vec4 colour;

@@ -1,6 +1,6 @@
 #include "Pipelines.h"
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
 
 	
 	static std::vector<uint32_t> ReadSPIRVFile(const std::string& filename) {

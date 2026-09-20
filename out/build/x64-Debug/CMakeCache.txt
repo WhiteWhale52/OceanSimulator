@@ -363,6 +363,9 @@ GLM_ENABLE_SIMD_SSSE3:BOOL=OFF
 //Force 'pure' instructions
 GLM_FORCE_PURE:BOOL=OFF
 
+//Path to a program.
+GLSLC:FILEPATH=C:/VulkanSDK/1.4.350.0/Bin/glslc.exe
+
 //Value Computed by CMake
 OceanSimulator_BINARY_DIR:STATIC=C:/Users/moham/Documents/GitHub/OceanSimulator/out/build/x64-Debug
 

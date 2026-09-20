@@ -54,7 +54,7 @@ namespace Engine {
 		void make_debug_messenger();
 
 	public:
-		Engine(Renderer::Renderer renderer);
+		Engine(TheRenderer::Renderer renderer);
 
 		~Engine();
 

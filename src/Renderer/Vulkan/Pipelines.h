@@ -6,7 +6,7 @@
 #include <fstream>
 
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
    
     struct GraphicsPipelineConfig {
         std::string              vertShader;

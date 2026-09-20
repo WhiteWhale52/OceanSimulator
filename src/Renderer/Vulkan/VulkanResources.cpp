@@ -1,7 +1,7 @@
 #include "VulkanResources.h"
 
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
 	void Buffer::CreateVertexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size) {
 		this->size = size;
 
