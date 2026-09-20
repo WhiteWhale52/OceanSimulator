@@ -1,6 +1,6 @@
 #include "SwapchainResources.h"
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
 
     void RenderPass::Create(const Core::Vulkan::VulkanContext& context, vk::Format colorFormat, vk::Format depthFormat)
     {
@@ -26,7 +26,7 @@ namespace Renderer::Vulkan {
         depthAttachement.finalLayout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
         vk::AttachmentReference colorRef;
-        colorRef.attachment = 1;
+        colorRef.attachment = 0;
         colorRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
         vk::AttachmentReference depthRef;
@@ -41,11 +41,22 @@ namespace Renderer::Vulkan {
         subpass.pDepthStencilAttachment = &depthRef;
         subpass.pColorAttachments = &colorRef;
 
+        vk::SubpassDependency dependency;
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+        dependency.srcAccessMask = {};
+        dependency.dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
+        dependency.dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+
+
         vk::RenderPassCreateInfo createInfo;
         createInfo.attachmentCount = 2;
         createInfo.pAttachments = attachments;
         createInfo.subpassCount = 1;
         createInfo.pSubpasses = &subpass;
+        createInfo.dependencyCount = 1;
+        createInfo.pDependencies = &dependency;
 
         context.logicalDevice.createRenderPass(&createInfo, nullptr, &handle);
     }
@@ -81,5 +92,19 @@ namespace Renderer::Vulkan {
         }
     }
 
+
+   
+
+    void SwapchainResources::Create(const Core::Vulkan::VulkanContext& context, vk::Format colourFormat, vk::Format depthFormat, const std::vector<vk::ImageView>& colourViews, vk::ImageView depthView, uint32_t width, uint32_t height)
+    {
+        renderPass.Create(context, colourFormat, depthFormat);
+        for (uint32_t i; i < colourViews.size(); i++) {
+            framebuffers[i].Create(context, renderPass, colourViews[i], depthView, width, height);
+        }
+    }
+
+    void SwapchainResources::Destroy(const Core::Vulkan::VulkanContext& context)
+    {
+    }
 
 }

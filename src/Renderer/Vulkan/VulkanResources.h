@@ -3,7 +3,7 @@
 #include <VulkanCore/Config/ResourcesConfigs.h>
 #include <VulkanCore/VulkanContext.h>
 
-namespace Renderer::Vulkan {
+namespace TheRenderer::Vulkan {
 
 	struct Buffer {
 		void CreateVertexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size);
