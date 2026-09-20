@@ -145,13 +145,14 @@ namespace Renderer::Vulkan
         // Create new swapchain, passing old handle so driver can recycle
         swapChain = CreateSwapchain(context, window, renderPass, oldSwapchain);
 
+
         // Now safe to destroy old swapchain
         context.logicalDevice.destroySwapchainKHR(oldSwapchain, nullptr);
 
     }
 
 
-    void Renderer::Vulkan::Swapchain::CreateImageViews(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
+    void Swapchain::CreateImageViews(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
     {
         swapChain.swapChainImageViews.resize(swapChain.swapChainImages.size());
 
@@ -178,7 +179,7 @@ namespace Renderer::Vulkan
         }
     }
 
-    void Renderer::Vulkan::Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
+    void Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
     {
         for (auto& frameBuffer : frameBuffers) {
             frameBuffer.Destroy(context);

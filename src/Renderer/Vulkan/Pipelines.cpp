@@ -123,8 +123,10 @@ namespace Renderer::Vulkan {
 
 
 		vk::PipelineVertexInputStateCreateInfo vertexInput;
-		vertexInput.vertexAttributeDescriptionCount = 0;
-		vertexInput.vertexBindingDescriptionCount = 0;
+		vertexInput.vertexBindingDescriptionCount = 1;
+		vertexInput.pVertexBindingDescriptions = &graphicsPipeConfig.vertexBindingDescription;
+		vertexInput.vertexAttributeDescriptionCount = static_cast<uint32_t>(graphicsPipeConfig.vertexAttributeDecriptions.size());
+		vertexInput.pVertexAttributeDescriptions = graphicsPipeConfig.vertexAttributeDecriptions.data();
 
 		vk::PipelineInputAssemblyStateCreateInfo inputAssembly;
 		inputAssembly.topology = graphicsPipeConfig.topology;

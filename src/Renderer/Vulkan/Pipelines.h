@@ -25,6 +25,9 @@ namespace Renderer::Vulkan {
         vk::RenderPass           renderPass = VK_NULL_HANDLE;
         vk::DescriptorSetLayout  descriptorLayout = VK_NULL_HANDLE;
         const char* debugName = nullptr;
+
+        vk::VertexInputBindingDescription vertexBindingDescription;
+        std::vector<vk::VertexInputAttributeDescription> vertexAttributeDecriptions;
     };
 
     struct ComputePipelineConfig {

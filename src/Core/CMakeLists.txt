@@ -65,4 +65,5 @@ target_link_libraries(Core PUBLIC
         Vulkan::glslang
         VulkanMemoryAllocator
         spirv-reflect
+        glm::glm
 )

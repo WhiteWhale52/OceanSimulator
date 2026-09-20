@@ -24,6 +24,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw)
 
+add_subdirectory(external/glm)
+
 
 add_subdirectory("src/Core")
 target_compile_definitions(Core
