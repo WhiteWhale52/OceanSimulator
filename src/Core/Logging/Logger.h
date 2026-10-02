@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Vulkan/config.h"
+#include <VulkanCore/Config/CommonHeaders.h>
 
 namespace Core::Logging {
 	
@@ -48,12 +48,14 @@ namespace Core::Logging {
 	);
 
 
-	void make_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
+	void MakeDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
 
 	
-	void destroy_debug_messenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
+	void DestroyDebugMessenger(vk::Instance& instance, VkDebugUtilsMessengerEXT& messenger);
 
-
+	void SetDebugName(vk::ObjectType type, uint64_t handle, const char* name);
+	void BeginDebugLabel(vk::CommandBuffer commandBuf, const char* name,	float r = 1, float g = 1, float b = 0, float a = 1);
+	void EndDebugLabel(vk::CommandBuffer commandBuf);
 	
 	class Logger {
 	public:
@@ -67,6 +69,7 @@ namespace Core::Logging {
 		
 		template<typename T, typename... Args>
 		void print(T first, Args... args) {
+#if DEBUG_VULKAN
 			std::cout << first;
 			if constexpr (sizeof...(args) > 0) {
 				std::cout << " ";
@@ -75,6 +78,8 @@ namespace Core::Logging {
 			else {
 				std::cout << std::endl;
 			}
+#endif
+			return;
 		}
 
 		void report_version_number(uint32_t version);

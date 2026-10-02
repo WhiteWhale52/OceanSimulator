@@ -1,8 +1,13 @@
-#include "Engine.h"
-#include <Logging/Logger.h>
-#include <Vulkan/VulkanContext.h>
-#include <Vulkan/VulkanInit.h>
+#include <TheRenderer.h>
+#include <VulkanCore/VulkanInit.h>
 #include <Config/AppConfig.h>
+
+static void FramebufferResizeCallback(GLFWwindow* window, int, int) {
+	auto* renderer = static_cast<TheRenderer::Renderer*>(glfwGetWindowUserPointer(window));
+	if (renderer) {
+		renderer-> NotifyResized();
+	}
+}
 
 int main() {
 	
@@ -15,12 +20,28 @@ int main() {
 	Core::Vulkan::VulkanContext context{};
 
 	Core::Vulkan::CreateInstance(context, appConfig);
+	GLFWwindow* window = Core::Vulkan::CreateGLFWWindow(context);
+	Core::Vulkan::CreateSurface(context, window);
 	Core::Vulkan::ChoosePhysicalDevice(context);
 	Core::Vulkan::CreateDeviceAndQueues(context);
+	Core::Vulkan::VMASetUp(context);
 	Core::Vulkan::CreateCommandPools(context);
 
-//	Engine::Engine* graphicsEngine = new Engine::Engine();
-//	delete graphicsEngine;
+	{
+		TheRenderer::Renderer renderer(context);
+		renderer.Init(window);
+
+		glfwSetWindowUserPointer(window, &renderer);
+		glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+
+		while (!glfwWindowShouldClose(window)) {
+			glfwPollEvents();
+			renderer.DrawFrame();
+		}
+
+		renderer.Shutdown();
+	}
+
 	Core::Vulkan::Destroy(context);
 	return 0;
 }

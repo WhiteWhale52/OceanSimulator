@@ -41,9 +41,16 @@ jobs:
       - name: Prepare Vulkan SDK
         uses: humbletim/setup-vulkan-sdk@v1.2.1
         with:
-          vulkan-query-version: 1.4.304.1
+          vulkan-query-version: 1.4.350.1
           vulkan-components: Vulkan-Headers, Vulkan-Loader, SPIRV-Headers, SPIRV-Tools, SPIRV-Cross, Glslang
           vulkan-use-cache: true
+
+      - name: Verify Vulkan tools
+        shell: pwsh
+        run: |
+          Write-Host "VULKAN_SDK = $env:VULKAN_SDK"
+          Get-Command glslc
+          glslc --version
 
       - name: Install Ninja
         run: choco install ninja -y

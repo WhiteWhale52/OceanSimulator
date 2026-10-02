@@ -1,8 +1,7 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include "Vulkan/config.h"
-#include <Renderer.h>
+#include <VulkanCore/Config/CommonHeaders.h>
+#include <TheRenderer.h>
 
 
 /*
@@ -55,7 +54,7 @@ namespace Engine {
 		void make_debug_messenger();
 
 	public:
-		Engine(Renderer::Renderer renderer);
+		Engine(TheRenderer::Renderer renderer);
 
 		~Engine();
 

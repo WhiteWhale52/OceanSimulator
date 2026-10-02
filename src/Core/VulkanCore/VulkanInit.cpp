@@ -7,9 +7,7 @@ namespace Core::Vulkan {
 
 	void CreateInstance(VulkanContext& context, const Core::Config::AppConfig& appConfig)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		logger->print("Making an instance");
-
 		/*
 		* An instance stores all per-application state info, it is a vulkan handle
 		* (An opaque integer or pointer value used to refer to a Vulkan object)
@@ -42,32 +40,27 @@ namespace Core::Vulkan {
 
 
 		uint32_t glfwExtensionCount = 0;
-		const char** glfwExtensions;
-
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
 		std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 		extensions.emplace_back(VK_KHR_SURFACE_EXTENSION_NAME);
-
+		for (uint32_t i = 0; i < glfwExtensionCount; i++) {
+			extensions.push_back(glfwExtensions[i]);
+		}
 		// This is where we add any new extensions we want to check
 		// extensions were the extensions required by glfw
 		// Then we add any more extensions for other purposes 
-#if DEBUG_VULKAN
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-#endif
-
-
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		extensions.push_back("VK_KHR_win32_surface");
 
 		logger->print("Instance Extensions to be requested");
 		for (const char* extensionName : extensions) {
-			logger->print("\t\"extensionName\"");
+			logger->print(extensionName);
 		}
 
 		std::vector<const char*> layers;
 
-#if DEBUG_VULKAN
 			layers.push_back("VK_LAYER_KHRONOS_validation");
-#endif
 
 		if (!InstanceSupported(extensions, layers)) {
 			context.instance = VK_NULL_HANDLE;
@@ -87,9 +80,7 @@ namespace Core::Vulkan {
 			context.instance = vk::createInstance(createInfo);
 		}
 		catch (vk::SystemError err) {
-#if DEBUG_VULKAN	
 			logger->print("Failed to create the instance");
-#endif
 		}
 		vkSetDebugUtilsObjectNameEXT_Func = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(
 			context.instance.getProcAddr("vkSetDebugUtilsObjectNameEXT")
@@ -104,17 +95,17 @@ namespace Core::Vulkan {
 	/// <param name="context">Global Vulkan Context</param>
 	void ChoosePhysicalDevice(VulkanContext& context)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		logger->print("\nChoosing physical device...");
 		std::vector<vk::PhysicalDevice> physicalDevices = context.instance.enumeratePhysicalDevices();
 
 		for (vk::PhysicalDevice physicalDevice : physicalDevices) {
-			logger->logDevice(physicalDevice);
+		logger->logDevice(physicalDevice);
 			PhysicalDeviceRequirements reqs;
 			reqs.requiredExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 			if (!IsDeviceSuitable(physicalDevice, reqs))
 			{
-				logger->print(physicalDevice.getProperties().deviceName, "doesn't not meet requirements");
+
+			logger->print(physicalDevice.getProperties().deviceName, "doesn't not meet requirements");
 				continue;
 			}
 			context.physicalDevice = physicalDevice;
@@ -125,15 +116,15 @@ namespace Core::Vulkan {
 			bool foundComputeQFamily = false;
 			bool choseTransferQFamily = false;
 			bool chosesparseBindingQFamily = false;
+			bool foundPresentQFamily = false;
 				
 			for (uint32_t i = 0; i < queueFamiliesProperties.size(); i++) {
-#if DEBUG_VULKAN
 				logger->print("\tQueue Family", i);
 				logger->print("\t\tHas", queueFamiliesProperties[i].queueCount, "queues");
 				logger->print("\t\tSupports graphics:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics));
 				logger->print("\t\tSupports compute:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute));
 				logger->print("\t\tSupports sparse binding:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eSparseBinding));
-#endif
+
 					
 				auto flags = queueFamiliesProperties[i].queueFlags;
 
@@ -152,11 +143,25 @@ namespace Core::Vulkan {
 					foundComputeQFamily = true;
 				}
 
+				vk::Bool32 presentSupport = physicalDevice.getSurfaceSupportKHR(i, context.surface);
+				logger->print("\t\tSupports present:", bool(presentSupport));
+				if (presentSupport && !foundPresentQFamily) {
+					context.presentQueueFamily = i;
+					logger->print("Present Queue Family Index:", i);
+					foundPresentQFamily = true;
+				}
+
+
+
 
 			}
 			if (!foundComputeQFamily && foundGraphicsQFamily) {
 				context.computeQueueFamily = context.graphicsQueueFamily;
 				logger->print("Using graphics queue family as fallback, so compute family index is:", context.computeQueueFamily);
+			}
+			if (!foundPresentQFamily) {
+				logger->print(physicalDevice.getProperties().deviceName, "has no present-capable queue family, skipping");
+				continue;   // this device can't present to our surface — try the next one
 			}
 
 				return;
@@ -169,7 +174,8 @@ namespace Core::Vulkan {
 	{
 		std::set<uint32_t> uniqueQueueFamilies = {
 		   context.graphicsQueueFamily,
-		   context.computeQueueFamily
+		   context.computeQueueFamily,
+		   context.presentQueueFamily
 		};
 
 		float priority = 1.0f;
@@ -193,7 +199,7 @@ namespace Core::Vulkan {
 
 		std::vector<const char*> deviceExtensions;
 		deviceExtensions.emplace_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-		
+		//deviceExtensions.emplace_back(VK_KHR_surface);
 
 		vk::DeviceCreateInfo deviceCreateInfo{};
 		deviceCreateInfo.queueCreateInfoCount = static_cast<uint32_t>(deviceQueuesCI.size());
@@ -201,25 +207,36 @@ namespace Core::Vulkan {
 		deviceCreateInfo.pEnabledFeatures = &phyDeviceFeatures;
 		deviceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
 		deviceCreateInfo.ppEnabledExtensionNames = deviceExtensions.data();
-#if DEBUG_VULKAN
 		std::vector<const char*> layers{
 			"VK_LAYER_KHRONOS_validation",
 		};
-		deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
-		deviceCreateInfo.ppEnabledLayerNames = layers.data();
-#endif
+		//deviceCreateInfo.enabledLayerCount = static_cast<uint32_t>(layers.size());
+		//deviceCreateInfo.ppEnabledLayerNames = layers.data();
 		context.logicalDevice = context.physicalDevice.createDevice(deviceCreateInfo);
 		
 		context.computeQueue = context.logicalDevice.getQueue(context.computeQueueFamily, 0);
 		context.graphicsQueue = context.logicalDevice.getQueue(context.graphicsQueueFamily, 0);
+		context.presentQueue = context.logicalDevice.getQueue(context.presentQueueFamily, 0);
 
-
-#if DEBUG_VULKAN
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
+		
 		logger->print("Logical Device Creation Successful.");
-#endif
 	}
 	
+
+	GLFWwindow* CreateGLFWWindow(VulkanContext& context) {
+			// initialize glfw
+			glfwInit();
+			int width{ 640 };
+			int height{ 480 };
+			GLFWwindow* window{ nullptr };
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+			window = glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr);
+			if (window != nullptr){
+				logger->print("Successfully made a GLFW window called \"Ocean Waves \", width:", width, ", height: ", height, "\n");
+			}
+			return window;
+	}
 	
 	void CreateCommandPools(VulkanContext& context)
 	{
@@ -259,39 +276,32 @@ namespace Core::Vulkan {
 
 	 bool InstanceSupported(std::vector<const char*>& extensions, std::vector<const char*>& layers)
 	{
-		Logging::Logger* logger = Core::Logging::Logger::get_logger();
 		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
 		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
 
-#if DEBUG_VULKAN
 		logger->print("The instance supports the following extensions:");
 		for (const vk::ExtensionProperties& supportedExtension : supportedExtensions) {
 			logger->print("\t\"",supportedExtension.extensionName,"\"\n");
 		}
-#endif 
 		bool found;
 		for (const char* extension : extensions) {
 			found = false;
 			for (const vk::ExtensionProperties& supportedExtension : supportedExtensions) {
 				if (strcmp(supportedExtension.extensionName, extension) == 0) {
 					found = true;
-					std::cout << "\nInstance Extension \"" << extension << "\" is supported";
+					logger->print("\nInstance Extension \"",extension,"\" is supported");
 				}
 			}
 			if (!found) {
-#if DEBUG_VULKAN		
-					std::cout << "\nInstance Extension \"" << extension << "\" is not supported";
-#endif
-					return false;
+				logger->print("\nInstance Extension \"", extension, "\" is not supported");
+				return false;
 			}
 		}
 
-#if DEBUG_VULKAN
-			std::cout << "\nThe instance supports the following layers: \n";
+			logger->print("\nThe instance supports the following layers: \n");
 			for (const vk::LayerProperties& supportedLayer : supportedLayers) {
-				std::cout << "\t\"" << supportedLayer.layerName << "\"\n";
+				logger->print("\t\"", supportedLayer.layerName, "\"\n");
 			}
-#endif
 		for (const char* layer : layers) {
 			found = false;
 			for (const vk::LayerProperties& supportedLayer : supportedLayers) {
@@ -301,9 +311,7 @@ namespace Core::Vulkan {
 				}
 			}
 			if (!found) {
-#if DEBUG_VULKAN
 					std::cout << "Instance Layer  \"" << layer << "\" is not supported\n";
-#endif				
 					return false;
 			}
 		}
@@ -318,38 +326,84 @@ namespace Core::Vulkan {
 	{
 		VkSurfaceKHR oldSurface = VK_NULL_HANDLE;
 		if (glfwCreateWindowSurface(context.instance, window, nullptr, &oldSurface) != VK_SUCCESS) {
-			Logging::Logger* logger = Core::Logging::Logger::get_logger();
 			logger->print("Failed to create window surface");
 			return;
 		}
 		context.surface = static_cast<VkSurfaceKHR>(oldSurface);
+		logger->print("Successfully created a surface");
+	}
+
+	void VMASetUp(VulkanContext& context)
+	{
+		VmaVulkanFunctions vmaFuncs{};
+		vmaFuncs.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+		vmaFuncs.vkGetDeviceProcAddr = vkGetDeviceProcAddr;
+		vmaFuncs.vkCreateImage = vkCreateImage;
+		vmaFuncs.vkCreateBuffer = vkCreateBuffer;
+
+		VmaAllocatorCreateInfo vmaAllocCreateInfo{};
+		vmaAllocCreateInfo.vulkanApiVersion = vk::enumerateInstanceVersion();
+		vmaAllocCreateInfo.instance = context.instance;
+		vmaAllocCreateInfo.physicalDevice = context.physicalDevice;
+		vmaAllocCreateInfo.device = context.logicalDevice;
+		vmaAllocCreateInfo.pVulkanFunctions = &vmaFuncs;
+		vmaAllocCreateInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+
+		VkResult vmaResult = vmaCreateAllocator(&vmaAllocCreateInfo, &context.vmaAllocator);
+		if (vmaResult != VK_SUCCESS) {
+			throw std::runtime_error("Failed to create VMA allocator");
+			logger->print("Failed to create window surface");
+		}
+		logger->print("Successfully set up VMA");
 	}
 
 	void Destroy(VulkanContext& context)
 	{
 		if (context.logicalDevice) {
 			context.logicalDevice.waitIdle();
+			logger->print("Logical Device is now IDLE");
+		}
+
+		if (context.vmaAllocator) {
+			vmaDestroyAllocator(context.vmaAllocator);
+			context.vmaAllocator = VK_NULL_HANDLE;
+			logger->print("Destroyed VMAAllocator");
 		}
 
 		if (context.computeCmdPool) {
 			context.logicalDevice.destroyCommandPool(context.computeCmdPool);
 			context.computeCmdPool = VK_NULL_HANDLE;
+			logger->print("Destroyed Compute Command Pool");
+
 		}
 
 		if (context.graphicsCmdPool) {
 			context.logicalDevice.destroyCommandPool(context.graphicsCmdPool);
 			context.graphicsCmdPool = VK_NULL_HANDLE;
+			logger->print("Destroyed Graphics Command Pool");
+
 		}
 
 		if (context.logicalDevice) {
 			context.logicalDevice.destroy();
 			context.logicalDevice = VK_NULL_HANDLE;
+			logger->print("Destroyed Logical Device");
+
 		}
+
+		if (context.surface) {
+			vkDestroySurfaceKHR(context.instance, context.surface, nullptr);
+			logger->print("Destroyed Surface");
+
+		}
+		
 
 
 		if (context.instance) {
 			context.instance.destroy();
 			context.instance = VK_NULL_HANDLE;
+			logger->print("Destroyed Instance");
+
 		}
 
 	}

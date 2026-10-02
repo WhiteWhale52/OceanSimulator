@@ -1,35 +1,55 @@
 #pragma once
-#include <Vulkan/VulkanContext.h> 
+#include <VulkanCore/VulkanContext.h> 
 #include <Logging/Logger.h>
+#include "SwapchainResources.h"
 
-namespace Renderer::Vulkan
+namespace TheRenderer::Vulkan
 {
 
-    struct Swapchains {
+    class Swapchain {
 
+	private:
+        vk::SurfaceKHR surface = VK_NULL_HANDLE;
 
         vk::SwapchainKHR swapChainInstance = VK_NULL_HANDLE;
-        vk::Extent2D swapChainExtent;
-        vk::SurfaceKHR surface = VK_NULL_HANDLE;
-        std::vector<vk::ImageView> swapChainImageViews;
-        std::vector<vk::Image> swapChainImages;
+
         vk::Format swapChainImageFormat;
+        vk::ColorSpaceKHR colorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+        vk::Extent2D extent;
+        vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
 
+        std::vector<vk::ImageView> swapChainImageViews = {};
+        std::vector<vk::Image> swapChainImages = {};
+        std::vector<FrameBuffer> frameBuffers = {};
+        uint32_t imageCount = 0;
 
-        Swapchains CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, uint32_t width, uint32_t height);
-        void Cleanup();
-        void Recreate(GLFWwindow* window);
+        vk::Image depthImage = VK_NULL_HANDLE;
+        VmaAllocation depthAlloc = {  };
+
+        vk::ImageView depthImageView = VK_NULL_HANDLE;
+        vk::Format depthFormat = vk::Format::eD32Sfloat;
+
+    public:
+        void CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain = VK_NULL_HANDLE);
+        void RecreateSwapChain(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass);
 
         vk::SwapchainKHR GetSwapChain() const { return swapChainInstance; }
         const std::vector<vk::Image>& GetImages() const { return swapChainImages; }
         vk::Format GetImageFormat() const { return swapChainImageFormat; }
-        vk::Extent2D GetExtent() const { return swapChainExtent; }
+		vk::Format GetDepthFormat() const { return depthFormat; }
+        vk::Extent2D GetExtent() const { return extent; }
         const std::vector<vk::ImageView>& GetImageViews() const { return swapChainImageViews; }
+        const std::vector<FrameBuffer>& GetFrameBuffers() const { return frameBuffers; }
+
+       
+
+        void CreateImageViews(const Core::Vulkan::VulkanContext & context);
+        void Destroy(const Core::Vulkan::VulkanContext& context);
+
+        void CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass);
 
 
-
-        void CreateImageViews(Core::Vulkan::VulkanContext& context, Swapchains& swapchain);
-        void CleanupSwapChain();
+		void DestroyImageResources(const Core::Vulkan::VulkanContext& context);
 
         vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
         vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
