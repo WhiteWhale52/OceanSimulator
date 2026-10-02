@@ -4,7 +4,7 @@
 #include "Vulkan/CommandBuffers.h"
 #include "Vulkan/Pipelines.h"
 #include "Vulkan/VulkanResources.h"
-#include "Vulkan/SwapchainResources.h"
+#include "Vulkan/Swapchain.h"
 #include "FrameResources.h"
 
 namespace TheRenderer {
@@ -12,10 +12,7 @@ namespace TheRenderer {
 	private:
 		Core::Vulkan::VulkanContext& m_context;
 
-		Vulkan::CommandBuffers m_commandBuffers;
-		Vulkan::Buffer m_vertexBuffer;
-		Vulkan::Pipeline m_trianglePipeline;
-		Vulkan::SwapchainResources m_swapchainResources;
+		
 
 		std::array<Vulkan::FrameData, Vulkan::MAX_FRAMES_IN_FLIGHT> m_frames;
 		uint32_t m_currentFrame;
@@ -26,9 +23,14 @@ namespace TheRenderer {
 		void CreateTriangleVertexBuffer();
 
 	public:
+		Vulkan::CommandBuffers m_commandBuffers;
+		Vulkan::Buffer m_vertexBuffer;
+		Vulkan::Pipeline m_trianglePipeline;
+		Vulkan::Swapchain m_swapchain;
+		Vulkan::RenderPass m_renderPass;
 		Renderer(Core::Vulkan::VulkanContext& context);
 		~Renderer();
-		void Init();
+		void Init(GLFWwindow* window);
 		void DrawFrame();
 	};
 }

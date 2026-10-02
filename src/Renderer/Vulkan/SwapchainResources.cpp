@@ -95,16 +95,5 @@ namespace TheRenderer::Vulkan {
 
    
 
-    void SwapchainResources::Create(const Core::Vulkan::VulkanContext& context, vk::Format colourFormat, vk::Format depthFormat, const std::vector<vk::ImageView>& colourViews, vk::ImageView depthView, uint32_t width, uint32_t height)
-    {
-        renderPass.Create(context, colourFormat, depthFormat);
-        for (uint32_t i; i < colourViews.size(); i++) {
-            framebuffers[i].Create(context, renderPass, colourViews[i], depthView, width, height);
-        }
-    }
-
-    void SwapchainResources::Destroy(const Core::Vulkan::VulkanContext& context)
-    {
-    }
 
 }

@@ -20,7 +20,7 @@ namespace TheRenderer {
 		config.frontface = vk::FrontFace::eCounterClockwise;
 		config.depthTest = false;
 		config.depthWrite = false;
-		config.renderPass = m_swapchainResources.renderPass.handle;
+		config.renderPass = m_renderPass.handle;
 		config.vertexBindingDescription = Vulkan::Vertex::GetBindingDescription();
 		config.vertexAttributeDecriptions = Vulkan::Vertex::GetAttributeDescriptions();
 
@@ -54,8 +54,11 @@ namespace TheRenderer {
 	{
 	}
 
-	void Renderer::Init()
+	void Renderer::Init(GLFWwindow* window)
 	{
+		m_swapchain.CreateSwapchain(m_context, window);
+		m_renderPass.Create(m_context, m_swapchain.GetImageFormat(), m_swapchain.GetDepthFormat());
+		m_swapchain.CreateFramebuffers(m_context, m_renderPass);
 		CreateTriangleVertexBuffer();
 		CreateTrianglePipeline();
 		CreateFrameData();

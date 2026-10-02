@@ -28,32 +28,35 @@ namespace TheRenderer::Vulkan {
 
 	}
 
-	void CommandBuffers::RecordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex,const SwapchainResources& swapchainResources,
-		vk::Extent2D swapchainExtent, vk::Pipeline graphicsPipeline, vk::Buffer vertexBuffer, uint32_t vertexCount)
+	void CommandBuffers::RecordCommandBuffer(vk::CommandBuffer commandBuffer, vk::RenderPass renderPass, vk::Framebuffer framebuffer, vk::Extent2D extent,
+		vk::Pipeline graphicsPipeline, vk::PipelineLayout pipelineLayout, vk::DescriptorSet descriptorSet, vk::Buffer vertexBuffer, uint32_t vertexCount,
+		vk::Buffer indexBuffer, uint32_t indexCount)
 	{
 		vk::CommandBufferBeginInfo begineInfo{};
 		commandBuffer.begin(begineInfo);
 
-		vk::ClearValue clearColour;
-		clearColour.color = vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f});
+		std::array < vk::ClearValue, 2 >clearValues{};
+		clearValues[0].color = vk::ClearColorValue(std::array<float, 4>{0.0f, 0.0f, 0.0f, 1.0f});
+		clearValues[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
 
 		vk::RenderPassBeginInfo rbBeginInfo{};
-		rbBeginInfo.renderPass = swapchainResources.renderPass.handle;
-		rbBeginInfo.clearValueCount = 1;
-		rbBeginInfo.framebuffer = swapchainResources.framebuffers[imageIndex].handle;
+		rbBeginInfo.renderPass = renderPass;
+		rbBeginInfo.clearValueCount = clearValues.size();
+		rbBeginInfo.framebuffer = framebuffer;
 		rbBeginInfo.renderArea.offset = vk::Offset2D{ 0,0 };
-		rbBeginInfo.renderArea.extent = swapchainExtent;
-		rbBeginInfo.pClearValues = &clearColour;
+		rbBeginInfo.renderArea.extent = extent;
+		rbBeginInfo.pClearValues = clearValues.data();
 
 		commandBuffer.beginRenderPass(rbBeginInfo, vk::SubpassContents::eInline);
 		commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, graphicsPipeline);
+		commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
 
 		vk::Viewport viewport{};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
 
-		viewport.height = static_cast<float>(swapchainExtent.height);
-		viewport.width = static_cast<float>(swapchainExtent.width);
+		viewport.height = static_cast<float>(extent.height);
+		viewport.width = static_cast<float>(extent.width);
 
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
@@ -61,14 +64,18 @@ namespace TheRenderer::Vulkan {
 
 		vk::Rect2D scissor{};
 		scissor.offset = vk::Offset2D{ 0,0 };
-		scissor.extent = swapchainExtent;
+		scissor.extent = extent;
 		commandBuffer.setScissor(0, 1, &scissor);
 
 		vk::Buffer vertexBuffers[] = { vertexBuffer };
 		vk::DeviceSize offsets[] = { 0 };
 		commandBuffer.bindVertexBuffers(0, 1, vertexBuffers, offsets);
+		commandBuffer.bindIndexBuffer(indexBuffer, 0, vk::IndexType::eUint32);
 
-		commandBuffer.draw(vertexCount, 1, 0, 0);
+		commandBuffer.drawIndexed(indexCount, 1, 0, 0, 0);
+
+
+		//commandBuffer.draw(vertexCount, 1, 0, 0);
 
 		commandBuffer.endRenderPass();
 

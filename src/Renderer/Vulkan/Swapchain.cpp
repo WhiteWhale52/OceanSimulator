@@ -35,9 +35,8 @@ namespace TheRenderer::Vulkan
         };
     }
 
-    Swapchain Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, vk::SwapchainKHR oldSwapChain)
+    void Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain = VK_NULL_HANDLE)
     {
-        Swapchain t_swapChain{};
 
         vk::SurfaceCapabilitiesKHR capabilities = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
 
@@ -52,41 +51,46 @@ namespace TheRenderer::Vulkan
         context.physicalDevice.getSurfacePresentModesKHR(context.surface, &modeCount, surfaceModes.data());
 
         auto t_surfaceFormat = ChooseSwapSurfaceFormat(surfaceFormats);
-        t_swapChain.swapChainImageFormat = t_surfaceFormat.format;
-        t_swapChain.colorSpace = t_surfaceFormat.colorSpace;
-        t_swapChain.presentMode = ChooseSwapPresentMode(surfaceModes);
-        t_swapChain.extent = ChooseSwapExtent(capabilities, window);
+        swapChainImageFormat = t_surfaceFormat.format;
+        colorSpace = t_surfaceFormat.colorSpace;
+        presentMode = ChooseSwapPresentMode(surfaceModes);
+        extent = ChooseSwapExtent(capabilities, window);
+
+		uint32_t desriedImageCount = capabilities.minImageCount + 1;
+		if (capabilities.maxImageCount > 0 && desriedImageCount > capabilities.maxImageCount)
+			desriedImageCount = capabilities.maxImageCount;
 
         vk::SwapchainCreateInfoKHR info{};
         info.surface = context.surface;
         info.minImageCount = capabilities.minImageCount + 1;
-        info.imageFormat = t_swapChain.swapChainImageFormat;
-        info.imageColorSpace = t_swapChain.colorSpace;
-        info.imageExtent = t_swapChain.extent;
+        info.imageFormat = swapChainImageFormat;
+        info.imageColorSpace = colorSpace;
+        info.imageExtent = extent;
         info.imageArrayLayers = 1;
         info.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
         info.imageSharingMode = vk::SharingMode::eExclusive;
         info.preTransform = capabilities.currentTransform;
         info.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
-        info.presentMode = t_swapChain.presentMode;
+        info.presentMode = presentMode;
         info.clipped = VK_TRUE;
         info.oldSwapchain = oldSwapChain;
 
-        t_swapChain.swapChainInstance = context.logicalDevice.createSwapchainKHR(info);
+        swapChainInstance = context.logicalDevice.createSwapchainKHR(info);
 
         // Get swapchain images (two-call pattern)
         uint32_t swapchainImageCount = 0;
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount, nullptr);
-        t_swapChain.swapChainImages.resize(swapchainImageCount);
-        context.logicalDevice.getSwapchainImagesKHR(t_swapChain.swapChainInstance, &swapchainImageCount, t_swapChain.swapChainImages.data());
+        context.logicalDevice.getSwapchainImagesKHR(swapChainInstance, &swapchainImageCount, nullptr);
+        swapChainImages.resize(swapchainImageCount);
+        context.logicalDevice.getSwapchainImagesKHR(swapChainInstance, &swapchainImageCount, swapChainImages.data());
+		imageCount = swapchainImageCount;
 
-        CreateImageViews(context, t_swapChain);
+        CreateImageViews(context);
 
         // Depth image
         vk::ImageCreateInfo depthInfo{};
         depthInfo.imageType = vk::ImageType::e2D;
-        depthInfo.format = t_swapChain.depthFormat;
-        depthInfo.extent = vk::Extent3D{ t_swapChain.extent.width, t_swapChain.extent.height, 1 };
+        depthInfo.format = depthFormat;
+        depthInfo.extent = vk::Extent3D{ extent.width, extent.height, 1 };
         depthInfo.mipLevels = 1;
         depthInfo.arrayLayers = 1;
         depthInfo.samples = vk::SampleCountFlagBits::e1;
@@ -97,70 +101,61 @@ namespace TheRenderer::Vulkan
         depthAllocInfo.usage = VMA_MEMORY_USAGE_AUTO;
 
         if (vmaCreateImage(context.vmaAllocator, reinterpret_cast<const VkImageCreateInfo*>(&depthInfo), &depthAllocInfo,
-            reinterpret_cast<VkImage*>(&t_swapChain.depthImage), &t_swapChain.depthAlloc, nullptr) != VK_SUCCESS)
+            reinterpret_cast<VkImage*>(&depthImage), &depthAlloc, nullptr) != VK_SUCCESS)
             throw std::runtime_error("Failed to create depth image");
 
         vk::ImageViewCreateInfo depthViewInfo{};
-        depthViewInfo.image = t_swapChain.depthImage;
+        depthViewInfo.image = depthImage;
         depthViewInfo.viewType = vk::ImageViewType::e2D;
-        depthViewInfo.format = t_swapChain.depthFormat;
+        depthViewInfo.format = depthFormat;
         depthViewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eDepth;
         depthViewInfo.subresourceRange.levelCount = 1;
         depthViewInfo.subresourceRange.layerCount = 1;
-        context.logicalDevice.createImageView(&depthViewInfo, nullptr, &t_swapChain.depthImageView);
-
-        
-        frameBuffers.reserve(imageCount + 1);
-        for (size_t i = 0; i < imageCount + 1; i++) {
-            FrameBuffer frameBuffer;
-            frameBuffer.Create(context, renderPass, t_swapChain.swapChainImageViews[i], t_swapChain.depthImageView,
-                extent.width, extent.height);
-        }
-
-        return t_swapChain;
+        context.logicalDevice.createImageView(&depthViewInfo, nullptr, &depthImageView);
     }
 
+	void Swapchain::CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass)
+	{
+		frameBuffers.clear();
+		frameBuffers.resize(swapChainImageViews.size());
+		for (size_t i = 0; i < swapChainImages.size() + 1; i++) {
+			frameBuffers[i].Create(context, renderPass, swapChainImageViews[i], depthImageView,
+				extent.width, extent.height);
+			frameBuffers.push_back(frameBuffers[i]);
+		}
+	}
 
-    void Swapchain::Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, Swapchain& swapChain)
+
+    void Swapchain::RecreateSwapChain(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass)
     {
         int width = 0, height = 0;
-
+		glfwGetFramebufferSize(window, &width, &height);
         while (width == 0 || height == 0) {
-            glfwGetFramebufferSize(window, &width, &height);
             glfwWaitEvents();
+            glfwGetFramebufferSize(window, &width, &height);
         }
 
         context.logicalDevice.waitIdle();
 
-        vk::SwapchainKHR oldSwapchain = swapChain.swapChainInstance;
-        context.logicalDevice.destroyImageView(swapChain.depthImageView);
-        vmaDestroyImage(context.vmaAllocator, swapChain.depthImage, swapChain.depthAlloc);
+        vk::SwapchainKHR oldSwapchain = swapChainInstance;
+		DestroyImageResources(context);
+		CreateSwapchain(context, window, oldSwapchain);
+		CreateFramebuffers(context, renderPass);
 
-        for (auto imageView : swapChain.swapChainImageViews)
-            context.logicalDevice.destroyImageView(imageView);
-        swapChain.swapChainImageViews.clear();
-        swapChain.swapChainImages.clear();
-        swapChain.swapChainInstance = VK_NULL_HANDLE;
-
-        // Create new swapchain, passing old handle so driver can recycle
-        swapChain = CreateSwapchain(context, window, renderPass, oldSwapchain);
-
-
-        // Now safe to destroy old swapchain
-        context.logicalDevice.destroySwapchainKHR(oldSwapchain, nullptr);
+        context.logicalDevice.destroySwapchainKHR(oldSwapchain);
 
     }
 
 
-    void Swapchain::CreateImageViews(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
+    void Swapchain::CreateImageViews(const Core::Vulkan::VulkanContext& context)
     {
-        swapChain.swapChainImageViews.resize(swapChain.swapChainImages.size());
+        swapChainImageViews.resize(swapChainImages.size());
 
-        for (size_t i = 0; i < swapChain.swapChainImages.size(); i++) {
+        for (size_t i = 0; i < swapChainImages.size(); i++) {
             vk::ImageViewCreateInfo viewCreateInfo{};
-            viewCreateInfo.image = swapChain.swapChainImages[i];
+            viewCreateInfo.image = swapChainImages[i];
             viewCreateInfo.viewType = vk::ImageViewType::e2D;
-            viewCreateInfo.format = swapChain.swapChainImageFormat;
+            viewCreateInfo.format = swapChainImageFormat;
 
             viewCreateInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
             viewCreateInfo.subresourceRange.baseMipLevel = 0;
@@ -172,30 +167,39 @@ namespace TheRenderer::Vulkan
             viewCreateInfo.components.b = vk::ComponentSwizzle::eIdentity;
             viewCreateInfo.components.a = vk::ComponentSwizzle::eIdentity;
 
-            if (context.logicalDevice.createImageView(&viewCreateInfo, nullptr, &swapChain.swapChainImageViews[i]) != vk::Result::eSuccess) {
+            if (context.logicalDevice.createImageView(&viewCreateInfo, nullptr, &swapChainImageViews[i]) != vk::Result::eSuccess) {
                 Core::Logging::Logger* logger = Core::Logging::Logger::get_logger();
                 logger->print("Failed to create image view");
             }
         }
     }
 
-    void Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain)
+    void Swapchain::DestroyImageResources(const Core::Vulkan::VulkanContext& context)
     {
         for (auto& frameBuffer : frameBuffers) {
             frameBuffer.Destroy(context);
         }
         frameBuffers.clear();
-        context.logicalDevice.destroyImageView(swapChain.depthImageView);
-        vmaDestroyImage(context.vmaAllocator, swapChain.depthImage, swapChain.depthAlloc);
 
-        for (auto imageView : swapChain.swapChainImageViews) 
+        if(depthImageView)
+            context.logicalDevice.destroyImageView(depthImageView);
+		if (depthImage)
+            vmaDestroyImage(context.vmaAllocator, depthImage, depthAlloc);
+		depthImageView = VK_NULL_HANDLE;
+		depthImage = VK_NULL_HANDLE;
+
+        for (auto imageView : swapChainImageViews) 
             context.logicalDevice.destroyImageView(imageView);
-        swapChain.swapChainImageViews.clear();
-        swapChain.swapChainImages.clear();
-        context.logicalDevice.destroySwapchainKHR(swapChain.swapChainInstance);
-        swapChain = {};
-
+        swapChainImageViews.clear();
+        swapChainImages.clear();
     }
 
+	void Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context)
+	{
+		DestroyImageResources(context);
+		if (swapChainInstance)
+			context.logicalDevice.destroySwapchainKHR(swapChainInstance);
+		swapChainInstance = VK_NULL_HANDLE;
+	}
+
     
-}

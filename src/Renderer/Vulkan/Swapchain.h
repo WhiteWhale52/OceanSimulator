@@ -6,9 +6,9 @@
 namespace TheRenderer::Vulkan
 {
 
-    struct Swapchain {
+    class Swapchain {
 
-
+	private:
         vk::SurfaceKHR surface = VK_NULL_HANDLE;
 
         vk::SwapchainKHR swapChainInstance = VK_NULL_HANDLE;
@@ -29,18 +29,27 @@ namespace TheRenderer::Vulkan
         vk::ImageView depthImageView = VK_NULL_HANDLE;
         vk::Format depthFormat = vk::Format::eD32Sfloat;
 
-
-        Swapchain CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, vk::SwapchainKHR oldSwapChain);
-        void Recreate(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass, Swapchain& swapChain);
+    public:
+        void CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain = VK_NULL_HANDLE);
+        void RecreateSwapChain(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass);
 
         vk::SwapchainKHR GetSwapChain() const { return swapChainInstance; }
         const std::vector<vk::Image>& GetImages() const { return swapChainImages; }
         vk::Format GetImageFormat() const { return swapChainImageFormat; }
+		vk::Format GetDepthFormat() const { return depthFormat; }
         vk::Extent2D GetExtent() const { return extent; }
         const std::vector<vk::ImageView>& GetImageViews() const { return swapChainImageViews; }
+        const std::vector<FrameBuffer>& GetFrameBuffers() const { return frameBuffers; }
 
-        void CreateImageViews(const Core::Vulkan::VulkanContext & context, Swapchain& swapchain);
-        void DestroySwapChain(const Core::Vulkan::VulkanContext& context, Swapchain& swapChain);
+       
+
+        void CreateImageViews(const Core::Vulkan::VulkanContext & context);
+        void DestroySwapChain(const Core::Vulkan::VulkanContext& context);
+
+        void CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass);
+
+
+		void DestroyImageResources(const Core::Vulkan::VulkanContext& context);
 
         vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
         vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);

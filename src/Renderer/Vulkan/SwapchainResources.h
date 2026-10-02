@@ -17,14 +17,5 @@ namespace TheRenderer::Vulkan {
 		void Destroy(const Core::Vulkan::VulkanContext& context);
 	};
 
-	class SwapchainResources {
-	public:
-		void Create(const Core::Vulkan::VulkanContext& context, vk::Format colourFormat, vk::Format depthFormat,
-			const std::vector<vk::ImageView>& colouriews, vk::ImageView depthView, uint32_t width, uint32_t height);
-
-		void Destroy(const Core::Vulkan::VulkanContext& context);
-
-		RenderPass renderPass;
-		std::vector<FrameBuffer> framebuffers;
-	};
+	
 }
