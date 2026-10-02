@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Vulkan/CommonHeaders.h>
+#include <VulkanCore/Config/CommonHeaders.h>
 
 namespace Core::Logging {
 	
@@ -69,6 +69,7 @@ namespace Core::Logging {
 		
 		template<typename T, typename... Args>
 		void print(T first, Args... args) {
+#if DEBUG_VULKAN
 			std::cout << first;
 			if constexpr (sizeof...(args) > 0) {
 				std::cout << " ";
@@ -77,6 +78,8 @@ namespace Core::Logging {
 			else {
 				std::cout << std::endl;
 			}
+#endif
+			return;
 		}
 
 		void report_version_number(uint32_t version);

@@ -1,7 +1,11 @@
 #pragma once
 #include <vulkan/vulkan.hpp>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <Memory/VMAUsage.cpp>
+#include <GLFW/glfw3native.h>
+#include <Memory/VMAUsage.h>
+#include <vulkan/vulkan_raii.hpp>
+#include <glm/glm.hpp>
 
  
 /*
@@ -28,3 +32,4 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <cstdint>
