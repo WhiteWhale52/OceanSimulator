@@ -35,7 +35,7 @@ namespace TheRenderer::Vulkan
         };
     }
 
-    void Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain = VK_NULL_HANDLE)
+    void Swapchain::CreateSwapchain(const Core::Vulkan::VulkanContext& context, GLFWwindow* window, vk::SwapchainKHR oldSwapChain)
     {
 
         vk::SurfaceCapabilitiesKHR capabilities = context.physicalDevice.getSurfaceCapabilitiesKHR(context.surface);
@@ -56,9 +56,9 @@ namespace TheRenderer::Vulkan
         presentMode = ChooseSwapPresentMode(surfaceModes);
         extent = ChooseSwapExtent(capabilities, window);
 
-		uint32_t desriedImageCount = capabilities.minImageCount + 1;
-		if (capabilities.maxImageCount > 0 && desriedImageCount > capabilities.maxImageCount)
-			desriedImageCount = capabilities.maxImageCount;
+        uint32_t desriedImageCount = capabilities.minImageCount + 1;
+        if (capabilities.maxImageCount > 0 && desriedImageCount > capabilities.maxImageCount)
+            desriedImageCount = capabilities.maxImageCount;
 
         vk::SwapchainCreateInfoKHR info{};
         info.surface = context.surface;
@@ -82,7 +82,7 @@ namespace TheRenderer::Vulkan
         context.logicalDevice.getSwapchainImagesKHR(swapChainInstance, &swapchainImageCount, nullptr);
         swapChainImages.resize(swapchainImageCount);
         context.logicalDevice.getSwapchainImagesKHR(swapChainInstance, &swapchainImageCount, swapChainImages.data());
-		imageCount = swapchainImageCount;
+        imageCount = swapchainImageCount;
 
         CreateImageViews(context);
 
@@ -114,22 +114,22 @@ namespace TheRenderer::Vulkan
         context.logicalDevice.createImageView(&depthViewInfo, nullptr, &depthImageView);
     }
 
-	void Swapchain::CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass)
-	{
-		frameBuffers.clear();
-		frameBuffers.resize(swapChainImageViews.size());
-		for (size_t i = 0; i < swapChainImages.size() + 1; i++) {
-			frameBuffers[i].Create(context, renderPass, swapChainImageViews[i], depthImageView,
-				extent.width, extent.height);
-			frameBuffers.push_back(frameBuffers[i]);
-		}
-	}
+    void Swapchain::CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass)
+    {
+        frameBuffers.clear();
+        frameBuffers.resize(swapChainImageViews.size());
+        for (size_t i = 0; i < swapChainImages.size() - 1; i++) {
+            frameBuffers[i].Create(context, renderPass, swapChainImageViews[i], depthImageView,
+                extent.width, extent.height);
+           // frameBuffers.push_back(frameBuffers[i]);
+        }
+    }
 
 
     void Swapchain::RecreateSwapChain(Core::Vulkan::VulkanContext& context, GLFWwindow* window, RenderPass& renderPass)
     {
         int width = 0, height = 0;
-		glfwGetFramebufferSize(window, &width, &height);
+        glfwGetFramebufferSize(window, &width, &height);
         while (width == 0 || height == 0) {
             glfwWaitEvents();
             glfwGetFramebufferSize(window, &width, &height);
@@ -138,9 +138,9 @@ namespace TheRenderer::Vulkan
         context.logicalDevice.waitIdle();
 
         vk::SwapchainKHR oldSwapchain = swapChainInstance;
-		DestroyImageResources(context);
-		CreateSwapchain(context, window, oldSwapchain);
-		CreateFramebuffers(context, renderPass);
+        DestroyImageResources(context);
+        CreateSwapchain(context, window, oldSwapchain);
+        CreateFramebuffers(context, renderPass);
 
         context.logicalDevice.destroySwapchainKHR(oldSwapchain);
 
@@ -181,25 +181,25 @@ namespace TheRenderer::Vulkan
         }
         frameBuffers.clear();
 
-        if(depthImageView)
+        if (depthImageView)
             context.logicalDevice.destroyImageView(depthImageView);
-		if (depthImage)
+        if (depthImage)
             vmaDestroyImage(context.vmaAllocator, depthImage, depthAlloc);
-		depthImageView = VK_NULL_HANDLE;
-		depthImage = VK_NULL_HANDLE;
+        depthImageView = VK_NULL_HANDLE;
+        depthImage = VK_NULL_HANDLE;
 
-        for (auto imageView : swapChainImageViews) 
+        for (auto imageView : swapChainImageViews)
             context.logicalDevice.destroyImageView(imageView);
         swapChainImageViews.clear();
         swapChainImages.clear();
     }
 
-	void Swapchain::Destroy(const Core::Vulkan::VulkanContext& context)
-	{
-		DestroyImageResources(context);
-		if (swapChainInstance)
-			context.logicalDevice.destroySwapchainKHR(swapChainInstance);
-		swapChainInstance = VK_NULL_HANDLE;
-	}
+    void Swapchain::Destroy(const Core::Vulkan::VulkanContext& context)
+    {
+        DestroyImageResources(context);
+        if (swapChainInstance)
+            context.logicalDevice.destroySwapchainKHR(swapChainInstance);
+        swapChainInstance = VK_NULL_HANDLE;
+    }
 
-    
+}

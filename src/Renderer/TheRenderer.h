@@ -23,7 +23,7 @@ namespace TheRenderer {
 		Vulkan::RenderPass m_renderPass;
 
 		std::array<Vulkan::FrameData, Vulkan::MAX_FRAMES_IN_FLIGHT> m_frames;
-		uint32_t m_currentFrame;
+		uint32_t m_currentFrame = 0;
 		bool m_framebufferResized = false;
 
 		void CreateFrameData();

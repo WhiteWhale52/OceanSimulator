@@ -18,9 +18,9 @@ namespace TheRenderer::Vulkan
         vk::Extent2D extent;
         vk::PresentModeKHR presentMode = vk::PresentModeKHR::eFifo;
 
-        std::vector<vk::ImageView> swapChainImageViews;
-        std::vector<vk::Image> swapChainImages;
-        std::vector<FrameBuffer> frameBuffers;
+        std::vector<vk::ImageView> swapChainImageViews = {};
+        std::vector<vk::Image> swapChainImages = {};
+        std::vector<FrameBuffer> frameBuffers = {};
         uint32_t imageCount = 0;
 
         vk::Image depthImage = VK_NULL_HANDLE;

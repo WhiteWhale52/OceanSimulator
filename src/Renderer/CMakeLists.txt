@@ -26,7 +26,9 @@ else()
 endif()
 
 set(SHADER_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Shaders")
-set(SHADER_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Shaders")
+set(SHADER_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Shaders")
+message(STATUS "Shader source directory: ${SHADER_SOURCE_DIR}")
+message(STATUS "Shader binary directory: ${SHADER_BINARY_DIR}")
 file(MAKE_DIRECTORY "${SHADER_BINARY_DIR}")
 
 file(GLOB SHADER_SOURCES
@@ -35,24 +37,27 @@ file(GLOB SHADER_SOURCES
     ${SHADER_SOURCE_DIR}/*.comp
 )
 
-set(SPIRV_BINARY_FILES "")
 
 foreach(SHADER ${SHADER_SOURCES})
-    get_filename_component(SHADER_NAME ${SHADER} NAME)
-    set(SPIRV_OUTPUT ${SHADER_BINARY_DIR}/${SHADER_NAME}.spv)
+    get_filename_component(SHADER_NAME "${SHADER}" NAME)
+    set(SPIRV_OUTPUT "${SHADER_BINARY_DIR}/${SHADER_NAME}.spv")
+
+    message(STATUS "Compiling shader: ${SHADER_NAME} -> ${SPIRV_OUTPUT}")
 
     add_custom_command(
-        OUTPUT ${SPIRV_OUTPUT}
-        COMMAND ${GLSLC} ${SHADER} -o ${SPIRV_OUTPUT}
-        DEPENDS ${SHADER}
+        OUTPUT "${SPIRV_OUTPUT}"
+        COMMAND "${GLSLC}" "${SHADER}" -o "${SPIRV_OUTPUT}"
+        DEPENDS "${SHADER}"
         COMMENT "Compiling shader: ${SHADER_NAME}"
+        VERBATIM
+
     )
 
-    list(APPEND SPIRV_BINARY_FILES ${SPIRV_OUTPUT})
+    list(APPEND SPIRV_BINARY_FILES "${SPIRV_OUTPUT}")
 endforeach()
-
-add_custom_target(CompileShaders DEPENDS ${SHADER_BINARY_FILES})
-
+add_custom_target(CompileShaders
+    DEPENDS ${SPIRV_BINARY_FILES}
+    )
 add_dependencies(Renderer CompileShaders)
 
 target_compile_definitions(VkFFT

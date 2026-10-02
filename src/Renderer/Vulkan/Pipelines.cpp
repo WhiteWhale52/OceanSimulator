@@ -5,11 +5,20 @@ namespace TheRenderer::Vulkan {
 	
 	static std::vector<uint32_t> ReadSPIRVFile(const std::string& filename) {
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+//		if (!file.is_open()) {
+//#if DEBUG_VULKAN
+//			logger.print("Failed to open shader file: ", filename);
+//#endif
+//			throw std::runtime_error("Failed to open shader file: " + filename);
+//		}
 		if (!file.is_open()) {
-#if DEBUG_VULKAN
-			logger.print("Failed to open shader file: ", filename);
-#endif
-			throw std::runtime_error("Failed to open shader file: " + filename);
+			std::cerr << "Failed to open shader file: " << filename << '\n';
+			std::cerr << "Current working directory: "
+				<< std::filesystem::current_path() << '\n';
+
+			throw std::runtime_error(
+				"Failed to open shader file: " + filename
+			);
 		}
 
 		size_t fileSize = (size_t)file.tellg();
@@ -64,7 +73,7 @@ namespace TheRenderer::Vulkan {
 	}
 
 	Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext& context,  GraphicsPipelineConfig& graphicsPipeConfig,
-		 vk::PipelineCache& pipelineCache)
+		const vk::PipelineCache& pipelineCache)
 	{
 		Pipeline graphicsPipeline;
 		std::vector<vk::PipelineShaderStageCreateInfo> stages;

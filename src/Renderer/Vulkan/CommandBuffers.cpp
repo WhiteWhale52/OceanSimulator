@@ -84,8 +84,9 @@ namespace TheRenderer::Vulkan {
 	//}
 
 
-	void RecordCommandBuffer(vk::CommandBuffer commandBuffer, vk::RenderPass renderPass, vk::Framebuffer framebuffer, vk::Extent2D extent,
-		vk::Pipeline graphicsPipeline, vk::Buffer vertexBuffer, uint32_t vertexCount) {
+	void CommandBuffers::RecordCommandBuffer(vk::CommandBuffer commandBuffer, vk::RenderPass renderPass, vk::Framebuffer framebuffer, vk::Extent2D extent,
+		vk::Pipeline graphicsPipeline, vk::Buffer vertexBuffer, uint32_t vertexCount) 
+	{
 		vk::CommandBufferBeginInfo beginInfo{};
 		commandBuffer.begin(beginInfo);
 

@@ -116,6 +116,7 @@ namespace Core::Vulkan {
 			bool foundComputeQFamily = false;
 			bool choseTransferQFamily = false;
 			bool chosesparseBindingQFamily = false;
+			bool foundPresentQFamily = false;
 				
 			for (uint32_t i = 0; i < queueFamiliesProperties.size(); i++) {
 				logger->print("\tQueue Family", i);
@@ -123,6 +124,7 @@ namespace Core::Vulkan {
 				logger->print("\t\tSupports graphics:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eGraphics));
 				logger->print("\t\tSupports compute:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eCompute));
 				logger->print("\t\tSupports sparse binding:", bool(queueFamiliesProperties[i].queueFlags & vk::QueueFlagBits::eSparseBinding));
+
 					
 				auto flags = queueFamiliesProperties[i].queueFlags;
 
@@ -141,11 +143,25 @@ namespace Core::Vulkan {
 					foundComputeQFamily = true;
 				}
 
+				vk::Bool32 presentSupport = physicalDevice.getSurfaceSupportKHR(i, context.surface);
+				logger->print("\t\tSupports present:", bool(presentSupport));
+				if (presentSupport && !foundPresentQFamily) {
+					context.presentQueueFamily = i;
+					logger->print("Present Queue Family Index:", i);
+					foundPresentQFamily = true;
+				}
+
+
+
 
 			}
 			if (!foundComputeQFamily && foundGraphicsQFamily) {
 				context.computeQueueFamily = context.graphicsQueueFamily;
 				logger->print("Using graphics queue family as fallback, so compute family index is:", context.computeQueueFamily);
+			}
+			if (!foundPresentQFamily) {
+				logger->print(physicalDevice.getProperties().deviceName, "has no present-capable queue family, skipping");
+				continue;   // this device can't present to our surface — try the next one
 			}
 
 				return;
@@ -158,7 +174,8 @@ namespace Core::Vulkan {
 	{
 		std::set<uint32_t> uniqueQueueFamilies = {
 		   context.graphicsQueueFamily,
-		   context.computeQueueFamily
+		   context.computeQueueFamily,
+		   context.presentQueueFamily
 		};
 
 		float priority = 1.0f;
@@ -199,7 +216,7 @@ namespace Core::Vulkan {
 		
 		context.computeQueue = context.logicalDevice.getQueue(context.computeQueueFamily, 0);
 		context.graphicsQueue = context.logicalDevice.getQueue(context.graphicsQueueFamily, 0);
-
+		context.presentQueue = context.logicalDevice.getQueue(context.presentQueueFamily, 0);
 
 		
 		logger->print("Logical Device Creation Successful.");
@@ -344,7 +361,7 @@ namespace Core::Vulkan {
 	{
 		if (context.logicalDevice) {
 			context.logicalDevice.waitIdle();
-			logger->print("Failed to create window surface");
+			logger->print("Logical Device is now IDLE");
 		}
 
 		if (context.vmaAllocator) {

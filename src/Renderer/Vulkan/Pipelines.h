@@ -72,7 +72,7 @@ namespace TheRenderer::Vulkan {
     Pipeline CreateComputePipeline(Core::Vulkan::VulkanContext & context,  ComputePipelineConfig& computePipeConfig, 
         const vk::PipelineCache& pipelineCache = nullptr);
 
-    Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext & context,  GraphicsPipelineConfig& graphicsPipeConfig,
+    Pipeline CreateGraphicsPipeline(Core::Vulkan::VulkanContext& context,  GraphicsPipelineConfig& graphicsPipeConfig,
         const vk::PipelineCache& pipelineCache = nullptr);
 
 

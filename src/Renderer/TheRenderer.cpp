@@ -3,7 +3,7 @@
 
 namespace TheRenderer {
 
-	Renderer::Renderer(Core::Vulkan::VulkanContext& context) : m_context(context), m_commandBuffers(context)
+	Renderer::Renderer(Core::Vulkan::VulkanContext& context) : m_context(context), m_commandBuffers(context), m_currentFrame(0)
 	{
 	}
 
@@ -20,8 +20,8 @@ namespace TheRenderer {
 
 	void Renderer::CreateTrianglePipeline() {
 		Vulkan::GraphicsPipelineConfig config{};
-		config.vertShader = "Shaders/triangle.vert.spv";
-		config.fragShader = "Shaders/triangle.frag.spv";
+		config.vertShader = "triangle.vert.spv";
+		config.fragShader = "triangle.frag.spv";
 		config.topology = vk::PrimitiveTopology::eTriangleList;
 		config.cullMode = vk::CullModeFlagBits::eNone;
 		config.polygonMode = vk::PolygonMode::eFill;
