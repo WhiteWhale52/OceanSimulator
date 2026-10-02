@@ -61,9 +61,9 @@ target_compile_definitions(VkFFT
 )
 
 target_sources(Renderer PRIVATE
-"Renderer.cpp"
+"TheRenderer.cpp"
 "FFT/VkFFTSystem.cpp"
- "Renderer.h" 
+ "TheRenderer.h" 
  "FrameResources.h"
  "Vulkan/CommandBuffers.cpp"
  "Vulkan/Pipelines.cpp"

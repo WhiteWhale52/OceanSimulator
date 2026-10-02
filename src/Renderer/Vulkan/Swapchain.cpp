@@ -194,7 +194,7 @@ namespace TheRenderer::Vulkan
         swapChainImages.clear();
     }
 
-	void Swapchain::DestroySwapChain(const Core::Vulkan::VulkanContext& context)
+	void Swapchain::Destroy(const Core::Vulkan::VulkanContext& context)
 	{
 		DestroyImageResources(context);
 		if (swapChainInstance)

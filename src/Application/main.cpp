@@ -1,6 +1,13 @@
-//#include <Engine.h>
+#include <TheRenderer.h>
 #include <VulkanCore/VulkanInit.h>
 #include <Config/AppConfig.h>
+
+static void FramebufferResizeCallback(GLFWwindow* window, int, int) {
+	auto* renderer = static_cast<TheRenderer::Renderer*>(glfwGetWindowUserPointer(window));
+	if (renderer) {
+		renderer-> NotifyResized();
+	}
+}
 
 int main() {
 	
@@ -20,11 +27,21 @@ int main() {
 	Core::Vulkan::VMASetUp(context);
 	Core::Vulkan::CreateCommandPools(context);
 
-//	Engine::Engine* graphicsEngine = new Engine::Engine();
-//	delete graphicsEngine;
-	while (!glfwWindowShouldClose(window)) {
-		// Frame code...
+	{
+		TheRenderer::Renderer renderer(context);
+		renderer.Init(window);
+
+		glfwSetWindowUserPointer(window, &renderer);
+		glfwSetFramebufferSizeCallback(window, FramebufferResizeCallback);
+
+		while (!glfwWindowShouldClose(window)) {
+			glfwPollEvents();
+			renderer.DrawFrame();
+		}
+
+		renderer.Shutdown();
 	}
+
 	Core::Vulkan::Destroy(context);
 	return 0;
 }

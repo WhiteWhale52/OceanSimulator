@@ -44,7 +44,7 @@ namespace TheRenderer::Vulkan
        
 
         void CreateImageViews(const Core::Vulkan::VulkanContext & context);
-        void DestroySwapChain(const Core::Vulkan::VulkanContext& context);
+        void Destroy(const Core::Vulkan::VulkanContext& context);
 
         void CreateFramebuffers(const Core::Vulkan::VulkanContext& context, RenderPass& renderPass);
 

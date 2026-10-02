@@ -11,10 +11,17 @@ namespace TheRenderer::Vulkan {
 	
 		vk::CommandBuffer AllocateGraphicsCmdBuffer();
 		vk::CommandBuffer AllocateComputeCmdBuffer();
-		void RecordCommandBuffer(vk::CommandBuffer commandBuffer, vk::RenderPass renderPass, vk::Framebuffer framebuffer, vk::Extent2D extent,
-			vk::Pipeline graphicsPipeline,vk::PipelineLayout pipelineLayout, vk::DescriptorSet descriptorSet, vk::Buffer vertexBuffer, uint32_t vertexCount, 
-			vk::Buffer indexBuffer, uint32_t indexCount);
-
+		//void RecordCommandBuffer(vk::CommandBuffer commandBuffer, vk::RenderPass renderPass, vk::Framebuffer framebuffer, vk::Extent2D extent,
+		//	vk::Pipeline graphicsPipeline,vk::PipelineLayout pipelineLayout, vk::DescriptorSet descriptorSet, vk::Buffer vertexBuffer, vk::Buffer indexBuffer, 
+		//	uint32_t indexCount, uint32_t vertexCount);
+		void RecordCommandBuffer(
+			vk::CommandBuffer commandBuffer,
+			vk::RenderPass renderPass,
+			vk::Framebuffer framebuffer,
+			vk::Extent2D extent,
+			vk::Pipeline graphicsPipeline,
+			vk::Buffer vertexBuffer,
+			uint32_t vertexCount);
 	private:
 		Core::Vulkan::VulkanContext& m_context;
 	};
