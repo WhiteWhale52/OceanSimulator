@@ -53,6 +53,9 @@ foreach(SHADER ${SHADER_SOURCES})
 
     )
 
+
+
+
     list(APPEND SPIRV_BINARY_FILES "${SPIRV_OUTPUT}")
 endforeach()
 add_custom_target(CompileShaders
@@ -85,4 +88,8 @@ target_sources(Renderer PRIVATE
 target_link_libraries(Renderer PUBLIC
     Core
     VkFFT
+)
+
+target_compile_definitions(Renderer PRIVATE
+    SHADER_DIR="${SHADER_BINARY_DIR}/"
 )

@@ -20,6 +20,7 @@ int main() {
 	Core::Vulkan::VulkanContext context{};
 
 	Core::Vulkan::CreateInstance(context, appConfig);
+	//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	GLFWwindow* window = Core::Vulkan::CreateGLFWWindow(context);
 	Core::Vulkan::CreateSurface(context, window);
 	Core::Vulkan::ChoosePhysicalDevice(context);

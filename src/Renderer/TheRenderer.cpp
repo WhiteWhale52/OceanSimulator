@@ -15,13 +15,16 @@ namespace TheRenderer {
 
 	void Renderer::RecreateSwapchain()
 	{
+		m_context.logicalDevice.waitIdle();
+		DestroyRenderFinishedSemaphores();
 		m_swapchain.RecreateSwapChain(m_context, m_window, m_renderPass);
+		CreateRenderFinishedSemaphores();
 	}
 
 	void Renderer::CreateTrianglePipeline() {
 		Vulkan::GraphicsPipelineConfig config{};
-		config.vertShader = "triangle.vert.spv";
-		config.fragShader = "triangle.frag.spv";
+		config.vertShader = "C:/Users/moham/Documents/GitHub/OceanSimulator/src/Renderer/Shaders/triangle.vert.spv";
+		config.fragShader = "C:/Users/moham/Documents/GitHub/OceanSimulator/src/Renderer/Shaders/triangle.frag.spv";
 		config.topology = vk::PrimitiveTopology::eTriangleList;
 		config.cullMode = vk::CullModeFlagBits::eNone;
 		config.polygonMode = vk::PolygonMode::eFill;
@@ -45,7 +48,6 @@ namespace TheRenderer {
 		for (auto& frame : m_frames) {
 			frame.commandBuffer = m_commandBuffers.AllocateGraphicsCmdBuffer();
 			frame.imageAvailableSemaphore = m_context.logicalDevice.createSemaphore(semaphoreCreateInfo);
-			frame.renderFinishedSemaphore = m_context.logicalDevice.createSemaphore(semaphoreCreateInfo);
 			frame.inFlightFence = m_context.logicalDevice.createFence(fenceCreateInfo);
 		}
 	}
@@ -65,10 +67,12 @@ namespace TheRenderer {
 		m_swapchain.CreateSwapchain(m_context, window);
 		m_renderPass.Create(m_context, m_swapchain.GetImageFormat(), m_swapchain.GetDepthFormat());
 		m_swapchain.CreateFramebuffers(m_context, m_renderPass);
+		CreateRenderFinishedSemaphores();
 
 		CreateTriangleVertexBuffer();
 		CreateTrianglePipeline();
 		CreateFrameData();
+
 	}
 
 	void Renderer::DrawFrame()
@@ -110,19 +114,19 @@ namespace TheRenderer {
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &frame.commandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &frame.renderFinishedSemaphore;
+		submitInfo.pSignalSemaphores = &m_renderFinishedSemaphores[imageIndex];
 
 		m_context.graphicsQueue.submit(submitInfo, frame.inFlightFence);
 
 		vk::PresentInfoKHR presentInfo{};
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &frame.renderFinishedSemaphore;
+		presentInfo.pWaitSemaphores = &m_renderFinishedSemaphores[imageIndex];
 		presentInfo.swapchainCount = 1;
 		vk::SwapchainKHR swapchainHandle = m_swapchain.GetSwapChain();
 		presentInfo.pSwapchains = &swapchainHandle;
 		presentInfo.pImageIndices = &imageIndex;
 
-		vk::Result presentResult = m_context.presentQueue.presentKHR(presentInfo);
+		vk::Result presentResult = m_context.presentQueue.presentKHR(&presentInfo);
 
 		if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR || m_framebufferResized) {
 			m_framebufferResized = false;
@@ -135,16 +139,28 @@ namespace TheRenderer {
 		m_currentFrame = (m_currentFrame + 1) % Vulkan::MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void Renderer::CreateRenderFinishedSemaphores() {
+		vk::SemaphoreCreateInfo createInfo{};
+		m_renderFinishedSemaphores.resize(m_swapchain.GetImages().size());
+		for (auto& semaphore : m_renderFinishedSemaphores) {
+			semaphore = m_context.logicalDevice.createSemaphore(createInfo);
+		}
+	}
+	void Renderer::DestroyRenderFinishedSemaphores() {
+		for (auto& sem : m_renderFinishedSemaphores)
+			m_context.logicalDevice.destroySemaphore(sem);
+		m_renderFinishedSemaphores.clear();
+	}
+
 	void Renderer::Shutdown()
 	{
 		m_context.logicalDevice.waitIdle();
 
 		for (auto& frame : m_frames){
 			m_context.logicalDevice.destroySemaphore(frame.imageAvailableSemaphore);
-			m_context.logicalDevice.destroySemaphore(frame.renderFinishedSemaphore);
 			m_context.logicalDevice.destroyFence(frame.inFlightFence);
 		}
-
+		DestroyRenderFinishedSemaphores();
 		m_vertexBuffer.Destroy(m_context);
 		m_indexBuffer.Destroy(m_context);
 		m_trianglePipeline.Destroy(m_context);
