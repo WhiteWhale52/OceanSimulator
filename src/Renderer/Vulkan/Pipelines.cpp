@@ -95,13 +95,14 @@ namespace TheRenderer::Vulkan {
 		fragStageCreateInfo.module = fragShader.handle;
 		fragStageCreateInfo.pName = "main";
 		stages.push_back(fragStageCreateInfo);
+		ShaderModule tesControlShader = ShaderModule();
+		ShaderModule tesEvalShader = ShaderModule();
+		ShaderModule geomShader = ShaderModule();
 
 		if (!graphicsPipeConfig.tesControlShader.empty() && !graphicsPipeConfig.tesEvalShader.empty()) {
 			
-			ShaderModule tesControlShader = ShaderModule();
 			tesControlShader.LoadSPIRV(context, graphicsPipeConfig.tesControlShader);
 			
-			ShaderModule tesEvalShader = ShaderModule();
 			tesEvalShader.LoadSPIRV(context, graphicsPipeConfig.tesEvalShader);
 			
 			vk::PipelineShaderStageCreateInfo tesControlStageCreateInfo;
@@ -119,7 +120,6 @@ namespace TheRenderer::Vulkan {
 
 		if (!graphicsPipeConfig.geomShader.empty() ) {
 
-			ShaderModule geomShader = ShaderModule();
 			geomShader.LoadSPIRV(context, graphicsPipeConfig.geomShader);
 
 			vk::PipelineShaderStageCreateInfo geomStageCreateInfo;
@@ -226,6 +226,12 @@ namespace TheRenderer::Vulkan {
 		graphicsPipeline.handle = context.logicalDevice.
 			createGraphicsPipeline(pipelineCache,graphicsPipelineCreateInfo).value;
 
+		vertShader.Destroy(context);
+		fragShader.Destroy(context);
+		tesControlShader.Destroy(context);   // no-op if never loaded (handle is null)
+		tesEvalShader.Destroy(context);
+		geomShader.Destroy(context);
+
 		return  graphicsPipeline;
 
 
@@ -234,6 +240,7 @@ namespace TheRenderer::Vulkan {
 	void Pipeline::Destroy(const Core::Vulkan::VulkanContext& context) {
 		if (handle) {
 			context.logicalDevice.destroyPipeline(handle);
+
 			context.logicalDevice.destroyPipelineLayout(layout);
 			handle = nullptr;
 			layout = nullptr;

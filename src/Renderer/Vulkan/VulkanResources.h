@@ -7,12 +7,15 @@ namespace TheRenderer::Vulkan {
 
 	struct Buffer {
 		void CreateVertexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size);
+		void CreateIndexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size);
 		vk::Buffer handle = VK_NULL_HANDLE;
 		VmaAllocation allocation = VK_NULL_HANDLE;
 		size_t size = 0;
 
 		void Create(const Core::Vulkan::VulkanContext& context);
 		void Destroy(const Core::Vulkan::VulkanContext& context);
+	private:
+		void CreateHostVisible(const Core::Vulkan::VulkanContext& context, const void* data, size_t size, vk::BufferUsageFlags usage);
 	};
 
 	struct Image {

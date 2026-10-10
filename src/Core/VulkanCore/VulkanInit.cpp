@@ -195,6 +195,7 @@ namespace Core::Vulkan {
 		phyDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		phyDeviceFeatures.sparseBinding = VK_TRUE;
 		phyDeviceFeatures.tessellationShader = VK_TRUE;
+		phyDeviceFeatures.fillModeNonSolid = VK_TRUE;
 
 
 		std::vector<const char*> deviceExtensions;
@@ -230,7 +231,7 @@ namespace Core::Vulkan {
 			int height{ 480 };
 			GLFWwindow* window{ nullptr };
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 			window = glfwCreateWindow(width, height, "Ocean Waves", nullptr, nullptr);
 			if (window != nullptr){
 				logger->print("Successfully made a GLFW window called \"Ocean Waves \", width:", width, ", height: ", height, "\n");
@@ -347,7 +348,7 @@ namespace Core::Vulkan {
 		vmaAllocCreateInfo.physicalDevice = context.physicalDevice;
 		vmaAllocCreateInfo.device = context.logicalDevice;
 		vmaAllocCreateInfo.pVulkanFunctions = &vmaFuncs;
-		vmaAllocCreateInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+		//vmaAllocCreateInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
 
 		VkResult vmaResult = vmaCreateAllocator(&vmaAllocCreateInfo, &context.vmaAllocator);
 		if (vmaResult != VK_SUCCESS) {

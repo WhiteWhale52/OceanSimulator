@@ -118,7 +118,7 @@ namespace TheRenderer::Vulkan
     {
         frameBuffers.clear();
         frameBuffers.resize(swapChainImageViews.size());
-        for (size_t i = 0; i < swapChainImages.size() - 1; i++) {
+        for (size_t i = 0; i < swapChainImages.size(); i++) {
             frameBuffers[i].Create(context, renderPass, swapChainImageViews[i], depthImageView,
                 extent.width, extent.height);
            // frameBuffers.push_back(frameBuffers[i]);

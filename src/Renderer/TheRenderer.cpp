@@ -1,6 +1,7 @@
 #include "TheRenderer.h"
 #include "Vulkan/TriangleSetup.h"
 
+
 namespace TheRenderer {
 
 	Renderer::Renderer(Core::Vulkan::VulkanContext& context) : m_context(context), m_commandBuffers(context), m_currentFrame(0)
@@ -15,16 +16,19 @@ namespace TheRenderer {
 
 	void Renderer::RecreateSwapchain()
 	{
+		m_context.logicalDevice.waitIdle();
+		DestroyRenderFinishedSemaphores();
 		m_swapchain.RecreateSwapChain(m_context, m_window, m_renderPass);
+		CreateRenderFinishedSemaphores();
 	}
 
 	void Renderer::CreateTrianglePipeline() {
 		Vulkan::GraphicsPipelineConfig config{};
-		config.vertShader = "triangle.vert.spv";
-		config.fragShader = "triangle.frag.spv";
+		config.vertShader = "C:/Users/moham/Documents/GitHub/OceanSimulator/src/Renderer/Shaders/triangle.vert.spv";
+		config.fragShader = "C:/Users/moham/Documents/GitHub/OceanSimulator/src/Renderer/Shaders/triangle.frag.spv";
 		config.topology = vk::PrimitiveTopology::eTriangleList;
 		config.cullMode = vk::CullModeFlagBits::eNone;
-		config.polygonMode = vk::PolygonMode::eFill;
+		config.polygonMode = vk::PolygonMode::eLine;
 		config.frontface = vk::FrontFace::eCounterClockwise;
 		config.depthTest = false;
 		config.depthWrite = false;
@@ -45,7 +49,6 @@ namespace TheRenderer {
 		for (auto& frame : m_frames) {
 			frame.commandBuffer = m_commandBuffers.AllocateGraphicsCmdBuffer();
 			frame.imageAvailableSemaphore = m_context.logicalDevice.createSemaphore(semaphoreCreateInfo);
-			frame.renderFinishedSemaphore = m_context.logicalDevice.createSemaphore(semaphoreCreateInfo);
 			frame.inFlightFence = m_context.logicalDevice.createFence(fenceCreateInfo);
 		}
 	}
@@ -65,10 +68,14 @@ namespace TheRenderer {
 		m_swapchain.CreateSwapchain(m_context, window);
 		m_renderPass.Create(m_context, m_swapchain.GetImageFormat(), m_swapchain.GetDepthFormat());
 		m_swapchain.CreateFramebuffers(m_context, m_renderPass);
+		CreateRenderFinishedSemaphores();
 
-		CreateTriangleVertexBuffer();
+		CreateMesh();
+		
+		//CreateTriangleVertexBuffer();
 		CreateTrianglePipeline();
 		CreateFrameData();
+
 	}
 
 	void Renderer::DrawFrame()
@@ -94,12 +101,12 @@ namespace TheRenderer {
 		device.resetFences(frame.inFlightFence);
 
 		frame.commandBuffer.reset();
-		//m_commandBuffers.RecordCommandBuffer(frame.commandBuffer, m_renderPass.handle, m_swapchain.GetFrameBuffers()[imageIndex].handle,
-		//	m_swapchain.GetExtent(), m_trianglePipeline.handle, m_trianglePipelineLayout, m_descriptorSet, m_vertexBuffer.handle, m_indexBuffer.handle,
-		//	static_cast<uint32_t>(triangleIndices.size()), static_cast<uint32_t>(triangleVertices.size()));
-
 		m_commandBuffers.RecordCommandBuffer(frame.commandBuffer, m_renderPass.handle, m_swapchain.GetFrameBuffers()[imageIndex].handle,
-			m_swapchain.GetExtent(), m_trianglePipeline.handle, m_vertexBuffer.handle, static_cast<uint32_t>(Vulkan::triangleVertices.size()));
+			m_swapchain.GetExtent(), m_trianglePipeline.handle, m_trianglePipelineLayout, m_descriptorSet, m_vertexBuffer.handle, m_indexBuffer.handle,
+			m_indexCount);
+
+		//m_commandBuffers.RecordCommandBuffer(frame.commandBuffer, m_renderPass.handle, m_swapchain.GetFrameBuffers()[imageIndex].handle,
+		//	m_swapchain.GetExtent(), m_trianglePipeline.handle, m_vertexBuffer.handle, static_cast<uint32_t>(Vulkan::triangleVertices.size()));
 
 		vk::PipelineStageFlags waitStages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
 
@@ -110,19 +117,19 @@ namespace TheRenderer {
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &frame.commandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = &frame.renderFinishedSemaphore;
+		submitInfo.pSignalSemaphores = &m_renderFinishedSemaphores[imageIndex];
 
 		m_context.graphicsQueue.submit(submitInfo, frame.inFlightFence);
 
 		vk::PresentInfoKHR presentInfo{};
 		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = &frame.renderFinishedSemaphore;
+		presentInfo.pWaitSemaphores = &m_renderFinishedSemaphores[imageIndex];
 		presentInfo.swapchainCount = 1;
 		vk::SwapchainKHR swapchainHandle = m_swapchain.GetSwapChain();
 		presentInfo.pSwapchains = &swapchainHandle;
 		presentInfo.pImageIndices = &imageIndex;
 
-		vk::Result presentResult = m_context.presentQueue.presentKHR(presentInfo);
+		vk::Result presentResult = m_context.presentQueue.presentKHR(&presentInfo);
 
 		if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR || m_framebufferResized) {
 			m_framebufferResized = false;
@@ -135,16 +142,39 @@ namespace TheRenderer {
 		m_currentFrame = (m_currentFrame + 1) % Vulkan::MAX_FRAMES_IN_FLIGHT;
 	}
 
+	void Renderer::CreateRenderFinishedSemaphores() {
+		vk::SemaphoreCreateInfo createInfo{};
+		m_renderFinishedSemaphores.resize(m_swapchain.GetImages().size());
+		for (auto& semaphore : m_renderFinishedSemaphores) {
+			semaphore = m_context.logicalDevice.createSemaphore(createInfo);
+		}
+	}
+	void Renderer::DestroyRenderFinishedSemaphores() {
+		for (auto& sem : m_renderFinishedSemaphores)
+			m_context.logicalDevice.destroySemaphore(sem);
+		m_renderFinishedSemaphores.clear();
+	}
+
+	void Renderer::CreateMesh()
+	{
+		Vulkan::MeshData mesh = Vulkan::GenerateMesh(64, 1.5f);
+		m_indexCount = static_cast<uint32_t>(mesh.indices.size());
+
+		m_vertexBuffer.CreateVertexBuffer(m_context, mesh.vertices.data(), sizeof(Vulkan::Vertex) * mesh.vertices.size());
+		m_indexBuffer.CreateIndexBuffer(m_context, mesh.indices.data(), sizeof(uint32_t) * mesh.indices.size());
+		
+
+	}
+
 	void Renderer::Shutdown()
 	{
 		m_context.logicalDevice.waitIdle();
 
 		for (auto& frame : m_frames){
 			m_context.logicalDevice.destroySemaphore(frame.imageAvailableSemaphore);
-			m_context.logicalDevice.destroySemaphore(frame.renderFinishedSemaphore);
 			m_context.logicalDevice.destroyFence(frame.inFlightFence);
 		}
-
+		DestroyRenderFinishedSemaphores();
 		m_vertexBuffer.Destroy(m_context);
 		m_indexBuffer.Destroy(m_context);
 		m_trianglePipeline.Destroy(m_context);

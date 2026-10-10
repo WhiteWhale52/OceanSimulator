@@ -53,6 +53,9 @@ foreach(SHADER ${SHADER_SOURCES})
 
     )
 
+
+
+
     list(APPEND SPIRV_BINARY_FILES "${SPIRV_OUTPUT}")
 endforeach()
 add_custom_target(CompileShaders
@@ -80,9 +83,14 @@ target_sources(Renderer PRIVATE
  "Vulkan/Swapchain.cpp"
  "Vulkan/SwapchainResources.cpp"
  "Vulkan/SwapchainResources.h"
-  "Vulkan/VulkanResources.h" "Vulkan/VulkanResources.cpp" "Vulkan/Vertex.h" "Vulkan/TriangleSetup.h")
+  "Vulkan/VulkanResources.h" "Vulkan/VulkanResources.cpp" "Vulkan/Vertex.h" "Vulkan/TriangleSetup.h"
+"Vulkan/Mesh.h" "Vulkan/Mesh.cpp" )
 
 target_link_libraries(Renderer PUBLIC
     Core
     VkFFT
+)
+
+target_compile_definitions(Renderer PRIVATE
+    SHADER_DIR="${SHADER_BINARY_DIR}/"
 )

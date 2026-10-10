@@ -8,7 +8,6 @@ namespace TheRenderer::Vulkan {
 	struct FrameData {
 		vk::CommandBuffer commandBuffer;
 		vk::Semaphore imageAvailableSemaphore;
-		vk::Semaphore renderFinishedSemaphore;
 		vk::Fence inFlightFence;
 	};
 
