@@ -3,12 +3,28 @@
 
 namespace TheRenderer::Vulkan {
 	void Buffer::CreateVertexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size) {
+		CreateHostVisible(context, data, size, vk::BufferUsageFlagBits::eVertexBuffer);
+	}
+
+	void Buffer::CreateIndexBuffer(const Core::Vulkan::VulkanContext& context, const void* data, size_t size)
+	{
+		CreateHostVisible(context, data, size, vk::BufferUsageFlagBits::eIndexBuffer);
+	}
+
+	void Buffer::Destroy(const Core::Vulkan::VulkanContext& context) {
+		if (context.vmaAllocator && handle) {
+			vmaDestroyBuffer(context.vmaAllocator, static_cast<VkBuffer>(handle), allocation);
+		}
+	}
+
+	void Buffer::CreateHostVisible(const Core::Vulkan::VulkanContext& context, const void* data, size_t size, vk::BufferUsageFlags usage)
+	{
 		this->size = size;
 
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
-		bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		bufferInfo.usage = static_cast<VkBufferUsageFlags>(usage);
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 
@@ -30,12 +46,6 @@ namespace TheRenderer::Vulkan {
 		vmaMapMemory(context.vmaAllocator, allocation, &mapped);
 		std::memcpy(mapped, data, size);
 		vmaUnmapMemory(context.vmaAllocator, allocation);
-	}
-
-	void Buffer::Destroy(const Core::Vulkan::VulkanContext& context) {
-		if (context.vmaAllocator && handle) {
-			vmaDestroyBuffer(context.vmaAllocator, static_cast<VkBuffer>(handle), allocation);
-		}
 	}
 
 

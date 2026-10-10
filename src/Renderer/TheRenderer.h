@@ -6,6 +6,7 @@
 #include "Vulkan/VulkanResources.h"
 #include "Vulkan/Swapchain.h"
 #include "FrameResources.h"
+#include "Vulkan/Mesh.h"
 
 namespace TheRenderer {
 	class Renderer {
@@ -26,6 +27,7 @@ namespace TheRenderer {
 		std::vector<vk::Semaphore>  m_renderFinishedSemaphores;
 		uint32_t m_currentFrame = 0;
 		bool m_framebufferResized = false;
+		uint32_t m_indexCount = 0;
 
 		void CreateFrameData();
 		void CreateTrianglePipeline();
@@ -33,6 +35,7 @@ namespace TheRenderer {
 		void RecreateSwapchain();
 		void CreateRenderFinishedSemaphores();
 		void DestroyRenderFinishedSemaphores();
+		void CreateMesh();
 
 
 	public:
@@ -41,6 +44,7 @@ namespace TheRenderer {
 		Vulkan::Pipeline GetTrianglePipeline() { return m_trianglePipeline; }
 		Vulkan::Swapchain GetSwapchain() { return m_swapchain; }
 		Vulkan::RenderPass GetRenderPass() { return m_renderPass; }
+
 
 		Renderer(Core::Vulkan::VulkanContext& context);
 		~Renderer();

@@ -195,6 +195,7 @@ namespace Core::Vulkan {
 		phyDeviceFeatures.samplerAnisotropy = VK_TRUE;
 		phyDeviceFeatures.sparseBinding = VK_TRUE;
 		phyDeviceFeatures.tessellationShader = VK_TRUE;
+		phyDeviceFeatures.fillModeNonSolid = VK_TRUE;
 
 
 		std::vector<const char*> deviceExtensions;
