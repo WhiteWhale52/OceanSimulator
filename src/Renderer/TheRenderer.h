@@ -11,6 +11,16 @@
 #include "Vulkan/CameraUBO.h"
 
 namespace TheRenderer {
+
+
+
+	struct UniformBuffer {
+		vk::Buffer handle;
+		VmaAllocation allocation;
+		void* mapped = nullptr;
+	};
+
+
 	class Renderer {
 	private:
 		Core::Vulkan::VulkanContext& m_context;
@@ -20,7 +30,7 @@ namespace TheRenderer {
 		Vulkan::Buffer m_vertexBuffer;
 		Vulkan::Buffer m_indexBuffer;
 		Vulkan::Pipeline m_trianglePipeline;
-		vk::PipelineLayout m_trianglePipelineLayout;
+		//vk::PipelineLayout m_trianglePipelineLayout;
 		vk::DescriptorSet m_descriptorSet;
 		Vulkan::Swapchain m_swapchain;
 		Vulkan::RenderPass m_renderPass;
@@ -64,11 +74,6 @@ namespace TheRenderer {
 		void NotifyResized() { m_framebufferResized = true; }
 	};
 
-	struct UniformBuffer {
-		vk::Buffer handle;
-		VmaAllocation allocation;
-		void* mapped = nullptr;
-	};
 
 
 }

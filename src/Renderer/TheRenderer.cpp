@@ -4,8 +4,25 @@
 
 namespace TheRenderer {
 
-	Renderer::Renderer(Core::Vulkan::VulkanContext& context) : m_context(context), m_commandBuffers(context), m_currentFrame(0)
+	Renderer::Renderer(Core::Vulkan::VulkanContext& context) : m_context(context), m_commandBuffers(context), m_currentFrame(0), m_desciptors(context)
 	{
+	}
+
+	void Renderer::Init(GLFWwindow* window)
+	{
+		m_window = window;
+
+		m_swapchain.CreateSwapchain(m_context, window);
+		m_renderPass.Create(m_context, m_swapchain.GetImageFormat(), m_swapchain.GetDepthFormat());
+		m_swapchain.CreateFramebuffers(m_context, m_renderPass);
+		CreateRenderFinishedSemaphores();
+
+		CreateMesh();
+		CreateCameraResources();
+		//CreateTriangleVertexBuffer();
+		CreateTrianglePipeline();
+		CreateFrameData();
+
 	}
 
 	void Renderer::CreateTriangleVertexBuffer()
@@ -35,6 +52,7 @@ namespace TheRenderer {
 		config.renderPass = m_renderPass.handle;
 		config.vertexBindingDescription = Vulkan::Vertex::GetBindingDescription();
 		config.vertexAttributeDecriptions = Vulkan::Vertex::GetAttributeDescriptions();
+		config.descriptorLayout = m_desciptors.cameraDescriptorLayout;
 
 		vk::PipelineCache pipelineCache = nullptr;
 		m_trianglePipeline = Vulkan::CreateGraphicsPipeline(m_context, config, pipelineCache);
@@ -61,22 +79,6 @@ namespace TheRenderer {
 	{
 	}
 
-	void Renderer::Init(GLFWwindow* window)
-	{
-		m_window = window;
-
-		m_swapchain.CreateSwapchain(m_context, window);
-		m_renderPass.Create(m_context, m_swapchain.GetImageFormat(), m_swapchain.GetDepthFormat());
-		m_swapchain.CreateFramebuffers(m_context, m_renderPass);
-		CreateRenderFinishedSemaphores();
-
-		CreateMesh();
-		
-		//CreateTriangleVertexBuffer();
-		CreateTrianglePipeline();
-		CreateFrameData();
-
-	}
 
 	void Renderer::DrawFrame()
 	{
@@ -100,9 +102,11 @@ namespace TheRenderer {
 
 		device.resetFences(frame.inFlightFence);
 
+		UpdateCameraUBO(m_currentFrame);
+
 		frame.commandBuffer.reset();
 		m_commandBuffers.RecordCommandBuffer(frame.commandBuffer, m_renderPass.handle, m_swapchain.GetFrameBuffers()[imageIndex].handle,
-			m_swapchain.GetExtent(), m_trianglePipeline.handle, m_trianglePipelineLayout, m_descriptorSet, m_vertexBuffer.handle, m_indexBuffer.handle,
+			m_swapchain.GetExtent(), m_trianglePipeline.handle, m_trianglePipeline.layout, m_cameraDescriptorSets[m_currentFrame], m_vertexBuffer.handle, m_indexBuffer.handle,
 			m_indexCount);
 
 		//m_commandBuffers.RecordCommandBuffer(frame.commandBuffer, m_renderPass.handle, m_swapchain.GetFrameBuffers()[imageIndex].handle,
@@ -170,17 +174,23 @@ namespace TheRenderer {
 	{
 		m_context.logicalDevice.waitIdle();
 
-		for (auto& frame : m_frames){
+		for (auto& frame : m_frames) {
 			m_context.logicalDevice.destroySemaphore(frame.imageAvailableSemaphore);
 			m_context.logicalDevice.destroyFence(frame.inFlightFence);
 		}
 		DestroyRenderFinishedSemaphores();
+
+		for (auto& ubo : m_cameraBuffers)
+			vmaDestroyBuffer(m_context.vmaAllocator, static_cast<VkBuffer>(ubo.handle), ubo.allocation);
+
+		m_context.logicalDevice.destroyDescriptorPool(m_desciptors.pool);   // also frees the sets allocated from it
+		m_context.logicalDevice.destroyDescriptorSetLayout(m_desciptors.cameraDescriptorLayout);
+
 		m_vertexBuffer.Destroy(m_context);
 		m_indexBuffer.Destroy(m_context);
 		m_trianglePipeline.Destroy(m_context);
 		m_swapchain.Destroy(m_context);
 		m_renderPass.Destroy(m_context);
-
 	}
 
 
