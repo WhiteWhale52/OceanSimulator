@@ -7,6 +7,8 @@
 #include "Vulkan/Swapchain.h"
 #include "FrameResources.h"
 #include "Vulkan/Mesh.h"
+#include "Vulkan/Descriptors.h"
+#include "Vulkan/CameraUBO.h"
 
 namespace TheRenderer {
 	class Renderer {
@@ -29,6 +31,11 @@ namespace TheRenderer {
 		bool m_framebufferResized = false;
 		uint32_t m_indexCount = 0;
 
+		std::array<UniformBuffer, Vulkan::MAX_FRAMES_IN_FLIGHT> m_cameraBuffers;
+		Vulkan::Descriptors m_desciptors;
+		std::vector<vk::DescriptorSet> m_cameraDescriptorSets;
+
+
 		void CreateFrameData();
 		void CreateTrianglePipeline();
 		void CreateTriangleVertexBuffer();
@@ -36,6 +43,8 @@ namespace TheRenderer {
 		void CreateRenderFinishedSemaphores();
 		void DestroyRenderFinishedSemaphores();
 		void CreateMesh();
+		void CreateCameraResources();
+		void UpdateCameraUBO(uint32_t frameIndex);
 
 
 	public:
@@ -54,4 +63,12 @@ namespace TheRenderer {
 		void Shutdown();
 		void NotifyResized() { m_framebufferResized = true; }
 	};
+
+	struct UniformBuffer {
+		vk::Buffer handle;
+		VmaAllocation allocation;
+		void* mapped = nullptr;
+	};
+
+
 }

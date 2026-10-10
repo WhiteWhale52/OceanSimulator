@@ -185,5 +185,60 @@ namespace TheRenderer {
 
 
 
+	void Renderer::CreateCameraResources()
+	{
+		m_desciptors.CreateCameraDescriptorSetLayout();
+		m_desciptors.CreateDescriptorPool(Vulkan::MAX_FRAMES_IN_FLIGHT);
+		m_cameraDescriptorSets = m_desciptors.AllocateCameraDescriptorSets(Vulkan::MAX_FRAMES_IN_FLIGHT);
+
+		for (uint32_t i = 0; i < Vulkan::MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			VkBufferCreateInfo bufferInfo{};
+			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+			bufferInfo.size = sizeof(Vulkan::CameraUBO);
+			bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+			bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+			VmaAllocationCreateInfo allocInfo{};
+			allocInfo.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+			allocInfo.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
+
+			VkBuffer rawBuffer;
+			VmaAllocationInfo outInfo{};
+			if (vmaCreateBuffer(m_context.vmaAllocator, &bufferInfo, &allocInfo, &rawBuffer, &m_cameraBuffers[i].allocation, &outInfo) != VK_SUCCESS) {
+				throw std::runtime_error("Failed to create camera UBO");
+			}
+
+			m_cameraBuffers[i].handle = rawBuffer;
+			m_cameraBuffers[i].mapped = outInfo.pMappedData;
+
+			vk::DescriptorBufferInfo bufferDescriptorInfo{};
+			bufferDescriptorInfo.buffer = m_cameraBuffers[i].handle;
+			bufferDescriptorInfo.offset = 0;
+			bufferDescriptorInfo.range = sizeof(Vulkan::CameraUBO);
+
+			vk::WriteDescriptorSet writeSet{};
+			writeSet.dstSet = m_cameraDescriptorSets[i];
+			writeSet.dstBinding = 0;
+			writeSet.dstArrayElement = 0;
+			writeSet.descriptorType = vk::DescriptorType::eUniformBuffer;
+			writeSet.descriptorCount = 1;
+			writeSet.pBufferInfo = &bufferDescriptorInfo;
+
+			m_context.logicalDevice.updateDescriptorSets(1, &writeSet, 0, nullptr);
+		}
+
+	}
+
+	void Renderer::UpdateCameraUBO(uint32_t frameIndex)
+	{
+		Vulkan::CameraUBO cameraUBO{};
+		cameraUBO.view = glm::lookAt(glm::vec3(0.0f, 1.5f, 3.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		cameraUBO.proj = glm::perspective(glm::radians(45.0f), m_swapchain.GetExtent().width / static_cast<float>(m_swapchain.GetExtent().height), 0.1f, 100.0f);
+
+		cameraUBO.proj[1][1] *= -1;
+		std::memcpy(m_cameraBuffers[frameIndex].mapped, &cameraUBO, sizeof(cameraUBO));
+	}
+
 }
 

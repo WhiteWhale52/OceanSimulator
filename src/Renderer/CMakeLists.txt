@@ -84,7 +84,7 @@ target_sources(Renderer PRIVATE
  "Vulkan/SwapchainResources.cpp"
  "Vulkan/SwapchainResources.h"
   "Vulkan/VulkanResources.h" "Vulkan/VulkanResources.cpp" "Vulkan/Vertex.h" "Vulkan/TriangleSetup.h"
-"Vulkan/Mesh.h" "Vulkan/Mesh.cpp" )
+"Vulkan/Mesh.h" "Vulkan/Mesh.cpp"  "Vulkan/CameraUBO.h")
 
 target_link_libraries(Renderer PUBLIC
     Core
